@@ -1,6 +1,6 @@
 [package]
 name = "instrumentality"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 rust-version = "1.60.0"
 description = "A data aggregation platform."
@@ -8,7 +8,6 @@ authors = ["James <james \"at\" berserksystems.com>"]
 readme = "README.md"
 license = "AGPL-3.0"
 repository = "https://github.com/berserksystems/instrumentality/"
-
 exclude = ["assets/", ".github/"]
 
 [[bin]]

@@ -9,7 +9,7 @@ use serde::Deserialize;
 
 #[derive(Clone, Deserialize)]
 pub struct IConfig {
-    pub mongodb: MDBIConfig,
+    pub mongodb: MDBConfig,
     pub content_types: HashMap<String, Vec<String>>,
     pub presence_types: HashMap<String, Vec<String>>,
     #[serde(default = "Settings::default")]
@@ -85,7 +85,7 @@ pub struct NetworkConfig {
 }
 
 #[derive(Clone, Deserialize)]
-pub struct MDBIConfig {
+pub struct MDBConfig {
     pub user: String,
     pub password: String,
     pub hosts: String, // This should be an array.

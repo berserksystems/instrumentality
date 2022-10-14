@@ -103,7 +103,6 @@ async fn create_root_account(
 }
 
 async fn create_indexes(database: &Database) {
-    unique_content_index(database).await.unwrap();
     unique_subject_name_index(database).await.unwrap();
     create_index("Users Key Index", "users", doc! {"key" : 1_u32}, database)
         .await
@@ -189,28 +188,6 @@ async fn unique_subject_name_index(
 
     database
         .collection::<Subject>("subjects")
-        .create_index(idx_model, None)
-        .await
-}
-
-async fn unique_content_index(
-    database: &Database,
-) -> Result<CreateIndexResult, mongodb::error::Error> {
-    let idx_options = IndexOptions::builder()
-        .name(String::from("Unique Content ID"))
-        .unique(true)
-        .sparse(true)
-        .build();
-
-    let idx_model = IndexModel::builder()
-        .keys(doc! {"content_id" : 1_u32,
-        "platform": 1_u32,
-        "content_type" : 1_u32})
-        .options(idx_options)
-        .build();
-
-    database
-        .collection::<Data>("data")
         .create_index(idx_model, None)
         .await
 }

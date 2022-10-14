@@ -89,8 +89,8 @@ impl Environment {
         lr
     }
 
-    pub async fn inject_account(iconfig: &IConfig, user: &User) {
-        let database = database::open(&iconfig).await.unwrap();
+    pub async fn inject_account(config: &IConfig, user: &User) {
+        let database = database::open(&config).await.unwrap();
 
         let _user_coll = database
             .handle()

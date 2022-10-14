@@ -15,9 +15,9 @@
 //!
 //! # Incentives
 //! Doing jobs in the queue should be preferable to simply posting whatever
-//! data the provider cares to. Ideally there is a leaderboard that awards
-//! points based on work done. This would have to reset monthly to allow for
-//! fair competition to new providers.
+//! data the provider cares to. Ideally there would be a leaderboard that awards
+//! points based on work done. This would have to weight recent contributions
+//! more highly for the sake of keeping the system as up to date as possible.
 //!
 //! # Username changes
 //! A fundamental problem with a queue is that we store all our data in terms
@@ -168,17 +168,20 @@ pub async fn queue(
             )
             .await
             .unwrap();
-        if let Some(q_item) = result {
-            let username_hint: String =
-                get_username_hint(&q_item.platform_id, &q_item.platform, &db)
-                    .await;
+        if let Some(queue_item) = result {
+            let username_hint: String = get_username_hint(
+                &queue_item.platform_id,
+                &queue_item.platform,
+                &db,
+            )
+            .await;
 
             Ok((
                 StatusCode::OK,
                 Json(QueueResponse::new(
-                    q_item.queue_id,
-                    q_item.platform,
-                    q_item.platform_id,
+                    queue_item.queue_id,
+                    queue_item.platform,
+                    queue_item.platform_id,
                     username_hint,
                 )),
             ))
@@ -272,14 +275,14 @@ pub async fn add_queue_item(
     confirmed_id: bool,
 ) {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
-    let q_item = q_coll
+    let queue_item = q_coll
         .find_one(
             doc! {"platform_id": platform_id, "platform": platform},
             None,
         )
         .await
         .unwrap();
-    if q_item.is_some() {
+    if queue_item.is_some() {
         q_coll
             .update_one(
                 doc! {"platform_id": platform_id, "platform": platform},
@@ -299,11 +302,11 @@ pub async fn add_queue_item(
                 .unwrap();
         }
     } else {
-        let q_item: InternalQueueItem = InternalQueueItem::new(
+        let queue_item: InternalQueueItem = InternalQueueItem::new(
             platform_id.to_string(),
             platform.to_string(),
         );
-        q_coll.insert_one(q_item, None).await.unwrap();
+        q_coll.insert_one(queue_item, None).await.unwrap();
     }
 }
 

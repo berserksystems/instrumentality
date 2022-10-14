@@ -11,7 +11,7 @@ use crate::config::IConfig;
 use crate::response::TypesResponse;
 
 pub async fn types(config: IConfig) -> impl IntoResponse {
-    let resp = TypesResponse::new(config.content_types, config.presence_types);
+    let tr = TypesResponse::new(config.content_types, config.presence_types);
 
-    (StatusCode::OK, Json(resp))
+    (StatusCode::OK, Json(tr))
 }

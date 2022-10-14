@@ -348,7 +348,8 @@ impl Datas {
 
     pub fn verify_for_queue(self, queue_item: InternalQueueItem) -> Self {
         let mut verified_data = Vec::new();
-        for data in self.data {
+        // let queue_id = self.queue_id.clone();
+        for data in &self.data {
             let verified: bool = match &data {
                 Data::Meta { platform, id, .. } => {
                     &queue_item.platform == platform

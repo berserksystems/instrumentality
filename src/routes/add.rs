@@ -20,10 +20,10 @@ use crate::routes::queue::InternalQueueItem;
 use crate::user::User;
 
 pub async fn add(
-    user: User,
     Json(datas): Json<Datas>,
-    db: DBHandle,
     config: IConfig,
+    user: User,
+    db: DBHandle,
 ) -> impl IntoResponse {
     if datas.data.is_empty() {
         return Err((
@@ -32,8 +32,8 @@ pub async fn add(
         ));
     }
 
-    if let Some(queue_id) = datas.queue_id.clone() {
-        if !valid_queue_id(&queue_id, &db).await {
+    if let Some(queue_id) = datas.queue_id.as_ref() {
+        if get_queue_item(&queue_id, &user, &db).await.is_none() {
             return Err((
                 StatusCode::BAD_REQUEST,
                 Json(Error::new("Invalid queue ID.")),
@@ -41,70 +41,75 @@ pub async fn add(
         }
     }
 
+    match process(datas, &config, &user, &db).await {
+        true => Ok((StatusCode::CREATED, Json(Ok::new()))),
+        false => Err((
+            StatusCode::BAD_REQUEST,
+            Json(Error::new(
+                "No valid data was submitted. Ensure the given platforms and 
+                content/presence types are supported by this server. Ensure all data
+                 was correctly labeled for queue jobs.",
+            )),
+        ))
+    }
+}
+
+async fn get_queue_item(
+    queue_id: &str,
+    user: &User,
+    db: &DBHandle,
+) -> Option<InternalQueueItem> {
+    let q_coll: Collection<InternalQueueItem> = db.collection("queue");
+    let queue_item = q_coll
+        .find_one(
+            doc! {"queue_id": &queue_id, "lock_holder": &user.uuid },
+            None,
+        )
+        .await
+        .unwrap();
+
+    queue_item
+}
+
+// The logic for this function needs to be simplified.
+// This function resolves a number of uncertainties:
+// - Is there any data remaining after verifying against the config?
+// - If there is a valid queue ID, if there is a valid queue item for that queue
+//   ID, is there any data remaining after verifying against the queue item?
+// - Does the data succeed in verifying against the queue?
+// And then it adds the data if all the answers are yes.
+async fn process(
+    datas: Datas,
+    config: &IConfig,
+    user: &User,
+    db: &DBHandle,
+) -> bool {
+    let data_coll: Collection<Data> = db.collection("data");
+
     let datas = datas.tag(&user.uuid).verify_for_config(&config);
 
-    if !datas.data.is_empty() {
-        let processed_datas = process_queue(datas, &db).await;
-        if let Some(datas) = processed_datas {
-            let data_coll: Collection<Data> = db.collection("data");
-            data_coll.insert_many(datas.data, None).await.unwrap();
-            return Ok((StatusCode::CREATED, Json(Ok::new())));
+    if datas.data.is_empty() {
+        return false;
+    }
+
+    if let Some(queue_id) = &datas.queue_id.clone() {
+        let queue_item = get_queue_item(&queue_id, user, db).await;
+
+        if queue_item.is_none() {
+            return false;
         }
-    }
 
-    Err((
-        StatusCode::BAD_REQUEST,
-        Json(Error::new(
-            "No valid data was submitted. Ensure the given platforms and 
-            content/presence types are supported by this server. Ensure all data
-             was correctly labeled for queue jobs.",
-        )),
-    ))
-}
+        let queue_item = queue_item.unwrap();
+        let datas = datas.verify_for_queue(queue_item);
 
-async fn valid_queue_id(queue_id: &str, db: &DBHandle) -> bool {
-    let q_coll: Collection<InternalQueueItem> = db.collection("queue");
-    let q_item = q_coll
-        .find_one(doc! {"queue_id": &queue_id }, None)
-        .await
-        .unwrap();
+        if datas.data.is_empty() {
+            return false;
+        }
 
-    q_item.is_some()
-}
-
-// The logic for this function needs to be simplified significantly.
-// There are several sources of uncertainty that this function resolves:
-// - Is there data to be processed and is there an attached queue_id?
-// - Does the given queue_id reference an actual job?
-// - Does the queue item have a username attached or a platform id?
-// - Does all the data in self.data pertain to the queue job? If not filter it
-//   out.
-// Then get relevant data and pass it to the queue for processing.
-async fn process_queue(datas: Datas, db: &DBHandle) -> Option<Datas> {
-    if datas.queue_id.is_none() {
-        return Some(datas);
-    }
-
-    let q_coll: Collection<InternalQueueItem> = db.collection("queue");
-    let q_item = q_coll
-        .find_one(doc! {"queue_id": &datas.queue_id.as_ref().unwrap() }, None)
-        .await
-        .unwrap();
-
-    if q_item.is_none() {
-        return Some(datas);
-    }
-
-    let q_item = q_item.unwrap();
-    let verified_datas = datas.verify_for_queue(q_item);
-
-    if verified_datas.data.is_empty() {
-        None
-    } else {
-        let (platform_id, platform, added_by, username) = verified_datas.info();
+        let (platform_id, platform, added_by, username) = datas.info();
 
         let process_success = queue::process(
-            verified_datas.queue_id.as_ref().unwrap(),
+            queue_id,
             &platform_id,
             &platform,
             &added_by,
@@ -113,10 +118,12 @@ async fn process_queue(datas: Datas, db: &DBHandle) -> Option<Datas> {
         )
         .await;
 
-        if process_success {
-            Some(verified_datas)
+        if !process_success {
+            false
         } else {
-            None
+            data_coll.insert_many(datas.data, None).await.is_ok()
         }
+    } else {
+        data_coll.insert_many(datas.data, None).await.is_ok()
     }
 }
