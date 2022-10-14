@@ -1,0 +1,7 @@
+group_imports = "StdExternalCrate"
+indent_style = "Block"
+max_width = 80
+normalize_comments = true
+tab_spaces = 4
+unstable_features = true
+wrap_comments = true

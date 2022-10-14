@@ -1,0 +1,43 @@
+[package]
+name = "instrumentality"
+version = "0.2.3"
+edition = "2021"
+rust-version = "1.60.0"
+description = "A data aggregation platform."
+authors = ["James <james \"at\" berserksystems.com>"]
+readme = "README.md"
+license = "AGPL-3.0"
+repository = "https://github.com/berserksystems/instrumentality/"
+
+exclude = ["assets/", ".github/"]
+
+[[bin]]
+name = "instrumentality"
+
+[lib]
+name = "instrumentality"
+path = "src/lib.rs"
+
+[dependencies]
+axum = "0.5.16"
+axum-server = { version = "0.4.2", features = ["tls-rustls"] }
+tower = { version = "0.4.13", features = ["timeout"] }
+tower-http = { version = "0.3.4", features = ["set-header"] }
+tracing = "0.1.36"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
+tokio = "1.21.2"
+tokio-stream = "0.1.10"
+
+mongodb = "2.3.0"
+toml = "0.5.9"
+chrono = { version = "0.4.22", features = ["serde"] }
+serde = "1.0.145"
+getrandom = "0.2.7"
+uuid = { version = "1.1.2", features = ["v4"] }
+
+
+[dev-dependencies]
+regex = "1.6.0"
+hyper = { version = "0.14.20", features = ["client"] }
+serde_json = "1.0.85"
+mime = "0.3.16"

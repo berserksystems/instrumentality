@@ -1,0 +1,31 @@
+[content_types]
+PLATFORM_1 = ["post", "story"]
+PLATFORM_2 = ["scrobble"]
+
+[presence_types]
+PLATFORM_1 = ["live"]
+PLATFORM_2 = ["listening_now"]
+PLATFORM_3 = ["streaming"]
+
+[mongodb]
+hosts = "127.0.0.1"
+port = "27017"
+user = "instrumentality"
+password = "mankind"
+database = "instrumentality"
+auth_database = "admin"
+
+[settings]
+log_level = "INFO"
+# Unusually short queue_timeout_secs so we aren't waiting 30 seconds for 
+# integration tests that require the use of the queue timeout.
+queue_timeout_secs = 1
+
+[network]
+address = "127.0.0.1"
+port = "8000"
+
+[tls]
+# Can be taken directly from Let's Encrypt.
+cert = "tls/cert.pem"
+key = "tls/privkey.pem"

@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# VSCode
+.vscode
+
+# Rust
+/target
+/vendor
+/coverage
+*.profraw
+
+# Instrumentality
+/tls
+Instrumentality.toml
+InstrumentalityTest.toml
