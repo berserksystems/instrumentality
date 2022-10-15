@@ -1,0 +1,51 @@
+name: Instrumentality Run.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run:
+    name: Run.
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git Checkout.
+      uses: actions/checkout@v3
+
+    - name: Rust Toolchain.
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+
+    - name: Start MongoDB.
+      uses: supercharge/mongodb-github-action@1.7.0
+      with:
+        mongodb-username: instrumentality
+        mongodb-password: mankind
+
+    - name: Create TLS certificates.
+      run: |
+          mkdir tls
+          openssl req -x509 -newkey rsa:4096 -keyout tls/privkey.pem -out tls/cert.pem -days 365 -nodes -subj '/CN=localhost'
+
+    - name: Create config file.
+      run: |
+          cp InstrumentalityExample.toml Instrumentality.toml
+
+    - name: Cargo Build for Release.
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+
+    - name: Run.
+      run: |
+          cargo run --release > OUTPUT &
+          process_id=$!
+          sleep 30s
+          kill -9 $process_id
+          grep "READY: https://127.0.0.1:12321." OUTPUT
