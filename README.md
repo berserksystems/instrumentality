@@ -31,16 +31,17 @@ This is an Axum web server that reads and writes data to MongoDB.
 
 ### Future
 #### Minor
-- [ ] Hot and cold `/queue`
+- [ ] Transactions
 - [ ] Live config reloading.
+- [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.
+- [ ] Better `/view` query syntax.
+- [ ] Admin tooling.
+- [ ] Channels (groups of groups and subjects.)
 - [ ] Basic analytics & dashboard on `/`.
-- [ ] Channels & webhooks.
 
 #### Major
-- [ ] Sharded database.
-- [ ] Admin tooling.
 - [ ] Example front end.
-- [ ] CDN caching media.
-- [ ] GraphQL for `/view`.
+- [ ] Scalability support.
+- [ ] Webhooks.
 - [ ] Handling discrepencies/byzantine platforms through consensus.
