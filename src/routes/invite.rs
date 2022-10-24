@@ -52,12 +52,16 @@ impl Referral {
 
 pub async fn invite(
     user: User,
-    db: DBHandle,
+    mut db: DBHandle,
 ) -> Result<(StatusCode, Json<InviteResponse>), (StatusCode, Json<Error>)> {
     let referral = Referral::new(user.uuid);
     let refer_coll: Collection<Referral> = db.collection("referrals");
-    refer_coll.insert_one(&referral, None).await.unwrap();
+    refer_coll
+        .insert_one_with_session(&referral, None, &mut db.session)
+        .await
+        .unwrap();
 
+    db.session.commit_transaction().await.unwrap();
     Ok((StatusCode::OK, Json(InviteResponse::new(referral.code))))
 }
 

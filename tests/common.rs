@@ -62,7 +62,7 @@ impl Environment {
 
     pub async fn cleanup(&self) {
         let database = database::open(&self.config).await.unwrap();
-        database::drop_database(&database.handle()).await;
+        database::drop_database(&database.handle().await).await;
     }
 
     // This is only used in tests, so it flags as dead code.
@@ -94,6 +94,7 @@ impl Environment {
 
         let _user_coll = database
             .handle()
+            .await
             .collection::<User>("users")
             .insert_one(user, None)
             .await

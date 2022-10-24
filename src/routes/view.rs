@@ -6,12 +6,12 @@
 //! <https://docs.berserksystems.com/endpoints/view/>.
 
 use axum::{extract::Query, http::StatusCode, Json};
+use futures::TryStreamExt;
 use mongodb::bson::doc;
 use mongodb::bson::Document;
 use mongodb::options::FindOptions;
 use mongodb::Collection;
 use serde::{Deserialize, Serialize};
-use tokio_stream::StreamExt;
 
 use crate::data::Data;
 use crate::database::DBHandle;
@@ -88,7 +88,7 @@ pub struct ViewQuery {
 
 pub async fn view(
     view_query: Option<Query<ViewQuery>>,
-    db: DBHandle,
+    mut db: DBHandle,
     _user: User,
 ) -> Result<(StatusCode, Json<ViewResponse>), (StatusCode, Json<Error>)> {
     if view_query.is_none() {
@@ -109,11 +109,15 @@ pub async fn view(
 
     let subj_coll: Collection<Subject> = db.collection("subjects");
     let doc: Document = doc! {"uuid": {"$in": &subjects}};
-    let subj_cursor = subj_coll.find(doc, None).await.unwrap();
-    let results: Vec<Result<Subject, mongodb::error::Error>> =
-        subj_cursor.collect().await;
-    let subjects: Vec<Subject> =
-        results.into_iter().map(|d| d.unwrap()).collect();
+    let mut subj_cursor = subj_coll
+        .find_with_session(doc, None, &mut db.session)
+        .await
+        .unwrap();
+    let subjects: Vec<Subject> = subj_cursor
+        .stream(&mut db.session)
+        .try_collect()
+        .await
+        .unwrap();
 
     let mut view_data = ViewData::new();
 
@@ -125,46 +129,53 @@ pub async fn view(
             for platform_id in s.profiles.get(platform_name).unwrap() {
                 let f = filter.clone();
                 let meta_data = data_coll
-                    .find_one(
+                    .find_one_with_session(
                         doc! {"id": &platform_id,
                             "platform": &platform_name,
                             "profile_picture": {"$exists": true}
                         },
                         None,
+                        &mut db.session,
                     )
                     .await
                     .unwrap();
                 let mut profile_data: ProfileData = ProfileData::new(meta_data);
 
-                let presence_cursor = data_coll
-                    .find(
+                let mut presence_cursor = data_coll
+                    .find_with_session(
                         doc! {"id": &platform_id,
                             "platform": &platform_name,
                             "presence_type": {"$exists": true}
                         },
                         f.clone(),
+                        &mut db.session,
                     )
                     .await
                     .unwrap();
-                let presence_data: Vec<Result<Data, mongodb::error::Error>> =
-                    presence_cursor.collect().await;
-                profile_data.presence =
-                    presence_data.into_iter().map(|d| d.unwrap()).collect();
+                let presence_data: Vec<Data> = presence_cursor
+                    .stream(&mut db.session)
+                    .try_collect()
+                    .await
+                    .unwrap();
+                profile_data.presence = presence_data;
 
-                let content_cursor = data_coll
-                    .find(
+                let mut content_cursor = data_coll
+                    .find_with_session(
                         doc! {"id": &platform_id,
                             "platform": &platform_name,
                             "content_type": {"$exists": true}
                         },
                         f.clone(),
+                        &mut db.session,
                     )
                     .await
                     .unwrap();
-                let content_data: Vec<Result<Data, mongodb::error::Error>> =
-                    content_cursor.collect().await;
-                profile_data.content =
-                    content_data.into_iter().map(|d| d.unwrap()).collect();
+                let content_data: Vec<Data> = content_cursor
+                    .stream(&mut db.session)
+                    .try_collect()
+                    .await
+                    .unwrap();
+                profile_data.content = content_data;
 
                 platform_data.profiles.push(profile_data);
             }
@@ -173,5 +184,6 @@ pub async fn view(
         view_data.subject_data.push(subject_data);
     }
 
+    db.session.commit_transaction().await.unwrap();
     Ok((StatusCode::OK, Json(ViewResponse::new(view_data))))
 }

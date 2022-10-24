@@ -50,7 +50,7 @@ pub async fn build_server(
 
     let handle: Handle = Handle::new();
 
-    build_workers(db_pool.handle(), config.clone()).await;
+    build_workers(db_pool.handle().await, config.clone()).await;
     tracing::info!("Workers built.");
 
     let app = build_app(config.clone(), db_pool, handle.clone());
@@ -128,12 +128,12 @@ async fn build_tls(cert: &str, key: &str) -> RustlsConfig {
     }
 }
 
-async fn build_workers(db: DBHandle, config: IConfig) {
+async fn build_workers(mut db: DBHandle, config: IConfig) {
     tokio::spawn(async move {
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(1)).await;
             clear_old_locks(
-                &db,
+                &mut db,
                 Duration::seconds(config.settings.queue_timeout_secs),
             )
             .await;

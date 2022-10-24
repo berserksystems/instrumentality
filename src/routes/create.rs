@@ -39,7 +39,7 @@ pub enum CreateData {
 
 pub async fn create(
     Json(data): Json<CreateData>,
-    db: DBHandle,
+    mut db: DBHandle,
     user: User,
     config: IConfig,
 ) -> impl IntoResponse {
@@ -59,10 +59,14 @@ pub async fn create(
                         ));
                     }
                 }
-                if subj_coll.insert_one(&subject, None).await.is_ok() {
+                subj_coll
+                    .insert_one_with_session(&subject, None, &mut db.session)
+                    .await
+                    .unwrap();
+                if db.session.commit_transaction().await.is_ok() {
                     for platform in subject.profiles.keys() {
                         for id in subject.profiles.get(platform).unwrap() {
-                            queue::add_queue_item(id, platform, &db, false)
+                            queue::add_queue_item(id, platform, &mut db, false)
                                 .await;
                         }
                     }
@@ -92,7 +96,11 @@ pub async fn create(
                 let subj_coll: Collection<Subject> = db.collection("subjects");
                 for s in &group.subjects {
                     let subject = subj_coll
-                        .find_one(doc! {"uuid": s}, None)
+                        .find_one_with_session(
+                            doc! {"uuid": s},
+                            None,
+                            &mut db.session,
+                        )
                         .await
                         .unwrap();
                     if subject.is_none() {
@@ -104,7 +112,12 @@ pub async fn create(
                         ));
                     }
                 }
-                if group_coll.insert_one(&group, None).await.is_ok() {
+                group_coll
+                    .insert_one_with_session(&group, None, &mut db.session)
+                    .await
+                    .unwrap();
+
+                if db.session.commit_transaction().await.is_ok() {
                     Ok((StatusCode::OK, Json(CreateResponse::new(&group.uuid))))
                 } else {
                     Err((

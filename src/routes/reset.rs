@@ -12,18 +12,21 @@ use crate::database::DBHandle;
 use crate::response::{Error, ResetResponse};
 use crate::user::User;
 
-pub async fn reset(user: User, db: DBHandle) -> impl IntoResponse {
+pub async fn reset(user: User, mut db: DBHandle) -> impl IntoResponse {
     let new_key = User::new_key();
     let u_coll = db.collection::<User>("users");
-    let result = u_coll
-        .find_one_and_update(
+    u_coll
+        .find_one_and_update_with_session(
             doc! {"key": user.key},
             doc! { "$set": {"key": &new_key}},
             None,
+            &mut db.session,
         )
-        .await;
+        .await
+        .unwrap();
+    let result = db.session.commit_transaction().await;
     match result {
-        Ok(Some(_)) => Ok((StatusCode::OK, Json(ResetResponse::new(new_key)))),
+        Ok(_) => Ok((StatusCode::OK, Json(ResetResponse::new(new_key)))),
         _ => Err((
             StatusCode::INTERNAL_SERVER_ERROR,
             Json(Error::new(

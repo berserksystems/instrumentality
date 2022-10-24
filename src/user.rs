@@ -7,6 +7,8 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::{async_trait, Json};
 use chrono::{DateTime, Utc};
+use futures::stream::TryStreamExt;
+use mongodb::SessionCursor;
 use mongodb::{bson::doc, Collection, Cursor};
 use serde::{Deserialize, Serialize};
 use tokio_stream::StreamExt;
@@ -50,17 +52,22 @@ impl User {
         key
     }
 
-    pub async fn subjects(&self, db: &DBHandle) -> Option<Vec<Subject>> {
+    pub async fn subjects(&self, db: &mut DBHandle) -> Option<Vec<Subject>> {
         let subj_coll: Collection<Subject> = db.collection("subjects");
-        let cursor: Cursor<Subject> = subj_coll
-            .find(doc! {"created_by": &self.uuid}, None)
+        let mut cursor: SessionCursor<Subject> = subj_coll
+            .find_with_session(
+                doc! {"created_by": &self.uuid},
+                None,
+                &mut db.session,
+            )
             .await
             .unwrap();
 
-        let results: Vec<Result<Subject, mongodb::error::Error>> =
-            cursor.collect().await;
-        let subjects: Vec<Subject> =
-            results.into_iter().map(|d| d.unwrap()).collect();
+        let subjects = cursor
+            .stream(&mut db.session)
+            .try_collect::<Vec<Subject>>()
+            .await
+            .unwrap();
         if subjects.is_empty() {
             None
         } else {
@@ -68,7 +75,7 @@ impl User {
         }
     }
 
-    pub async fn groups(&self, db: &DBHandle) -> Option<Vec<Group>> {
+    pub async fn groups(&self, db: &mut DBHandle) -> Option<Vec<Group>> {
         let group_coll: Collection<Group> = db.collection("groups");
         let cursor: Cursor<Group> = group_coll
             .find(doc! {"created_by": &self.uuid}, None)
@@ -86,9 +93,12 @@ impl User {
         }
     }
 
-    pub async fn with_key(key: &str, db: &DBHandle) -> Option<Self> {
+    pub async fn with_key(key: &str, db: &mut DBHandle) -> Option<Self> {
         let users_coll: Collection<User> = db.collection("users");
-        users_coll.find_one(doc! {"key": key}, None).await.unwrap()
+        users_coll
+            .find_one_with_session(doc! {"key": key}, None, &mut db.session)
+            .await
+            .unwrap()
     }
 }
 
@@ -105,7 +115,7 @@ impl<B: Send> FromRequest<B> for User {
         match key {
             Some(key) => {
                 let key = key.to_str().unwrap();
-                let user = User::with_key(key, &db.handle()).await;
+                let user = User::with_key(key, &mut db.handle().await).await;
 
                 match user {
                     Some(user) => Ok(user),

@@ -38,20 +38,22 @@ pub enum UpdateData {
 
 pub async fn update(
     Json(data): Json<UpdateData>,
-    db: DBHandle,
+    mut db: DBHandle,
     user: User,
 ) -> impl IntoResponse {
     match data {
         UpdateData::UpdateSubject { .. } => {
-            update_subject(&data, &db, &user).await
+            update_subject(&data, &mut db, &user).await
         }
-        UpdateData::UpdateGroup { .. } => update_group(&data, &db, &user).await,
+        UpdateData::UpdateGroup { .. } => {
+            update_group(&data, &mut db, &user).await
+        }
     }
 }
 
 async fn update_subject(
     data: &UpdateData,
-    db: &DBHandle,
+    db: &mut DBHandle,
     user: &User,
 ) -> Result<(StatusCode, Json<Ok>), (StatusCode, Json<Error>)> {
     let (uuid, name, profiles, description) = match data {
@@ -66,7 +68,11 @@ async fn update_subject(
     let req_uuid = &user.uuid;
     let subj_coll: Collection<Subject> = db.collection("subjects");
     if let Ok(Some(subject)) = subj_coll
-        .find_one(doc! {"uuid": &uuid, "created_by": &req_uuid}, None)
+        .find_one_with_session(
+            doc! {"uuid": &uuid, "created_by": &req_uuid},
+            None,
+            &mut db.session,
+        )
         .await
     {
         let mut old_profiles: Vec<(&String, &String)> = Vec::new();
@@ -99,7 +105,7 @@ async fn update_subject(
         }
 
         subj_coll
-            .update_one(
+            .update_one_with_session(
                 doc! {"uuid": &uuid, "created_by": &req_uuid},
                 doc! {"$set":
                     {"name": name,
@@ -107,9 +113,11 @@ async fn update_subject(
                     "description": description}
                 },
                 None,
+                &mut db.session,
             )
             .await
             .unwrap();
+        db.session.commit_transaction().await.unwrap();
         Ok((StatusCode::OK, Json(Ok::new())))
     } else {
         Err((
@@ -123,7 +131,7 @@ async fn update_subject(
 
 async fn update_group(
     data: &UpdateData,
-    db: &DBHandle,
+    db: &mut DBHandle,
     user: &User,
 ) -> Result<(StatusCode, Json<Ok>), (StatusCode, Json<Error>)> {
     let (uuid, name, subjects, description) = match data {
@@ -138,13 +146,19 @@ async fn update_group(
     let req_uuid = &user.uuid;
     let group_coll: Collection<Group> = db.collection("groups");
     if let Ok(Some(_)) = group_coll
-        .find_one(doc! {"uuid": &uuid, "created_by": &req_uuid}, None)
+        .find_one_with_session(
+            doc! {"uuid": &uuid, "created_by": &req_uuid},
+            None,
+            &mut db.session,
+        )
         .await
     {
         let subj_coll: Collection<Subject> = db.collection("subjects");
         for s in subjects {
-            let subject =
-                subj_coll.find_one(doc! {"uuid": s}, None).await.unwrap();
+            let subject = subj_coll
+                .find_one_with_session(doc! {"uuid": s}, None, &mut db.session)
+                .await
+                .unwrap();
             if subject.is_none() {
                 return Err((
                     StatusCode::BAD_REQUEST,
@@ -155,7 +169,7 @@ async fn update_group(
             }
         }
         group_coll
-            .update_one(
+            .update_one_with_session(
                 doc! {"uuid": &uuid, "created_by": &req_uuid},
                 doc! {"$set":
                     {"name": name,
@@ -163,9 +177,11 @@ async fn update_group(
                     "description": description}
                 },
                 None,
+                &mut db.session,
             )
             .await
             .unwrap();
+        db.session.commit_transaction().await.unwrap();
         Ok((StatusCode::OK, Json(Ok::new())))
     } else {
         Err((

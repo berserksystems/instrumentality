@@ -6,8 +6,11 @@ use axum::async_trait;
 use axum::extract::{FromRequest, RequestParts};
 use axum::response::Response;
 use mongodb::bson::Document;
-use mongodb::options::{ClientOptions, IndexOptions};
+use mongodb::options::{
+    ClientOptions, Credential, IndexOptions, ServerAddress,
+};
 use mongodb::results::CreateIndexResult;
+use mongodb::ClientSession;
 use mongodb::{bson::doc, Client, Collection, Database, IndexModel};
 
 use crate::config::IConfig;
@@ -22,15 +25,19 @@ pub struct DBPool {
 }
 
 impl DBPool {
-    pub fn handle(&self) -> DBHandle {
+    pub async fn handle(&self) -> DBHandle {
+        let mut session = self.client.start_session(None).await.unwrap();
+        session.start_transaction(None).await.unwrap();
         DBHandle {
             db: self.client.database(&self.database),
+            session: session,
         }
     }
 }
 
 pub struct DBHandle {
     db: Database,
+    pub session: ClientSession,
 }
 
 impl DBHandle {
@@ -52,14 +59,29 @@ pub async fn open(
     let port = &config.mongodb.port;
     let database = &config.mongodb.database;
     let auth_database = &config.mongodb.auth_database;
-    let mut mongo_options = ClientOptions::parse(format!(
-        "mongodb://{user}:{password}@{hosts}:{port}/?authSource={auth_database}"
-    ))
-    .await?;
-    mongo_options.connect_timeout = Some(Duration::new(1, 0));
-    mongo_options.heartbeat_freq = Some(Duration::new(1, 0));
-    mongo_options.server_selection_timeout = Some(Duration::new(1, 0));
-    let mongo_client = Client::with_options(mongo_options).unwrap();
+    let creds = Credential::builder()
+        .username(user.to_string())
+        .password(password.to_string())
+        .source(auth_database.to_string())
+        .build();
+
+    let server_addr =
+        ServerAddress::parse(format!("{}:{}", hosts, port)).unwrap();
+
+    let client_opts = ClientOptions::builder()
+        .credential(creds)
+        .hosts(vec![server_addr])
+        // .retry_reads(false)
+        // .retry_writes(false)
+        .connect_timeout(Duration::new(1, 0))
+        .heartbeat_freq(Duration::new(1, 0))
+        .server_selection_timeout(Duration::new(1, 0))
+        .build();
+
+    // assert!(!client_opts.retry_writes.unwrap());
+
+    // tracing::error!("{:?}", client_opts);
+    let mongo_client = Client::with_options(client_opts).unwrap();
     let database = mongo_client.database(database);
 
     // It is only at this point that MongoDB actually makes a connection.
@@ -225,7 +247,7 @@ impl<B: Send> FromRequest<B> for DBHandle {
     ) -> Result<Self, Self::Rejection> {
         let db_pool = request.extensions().get::<DBPool>().unwrap();
 
-        let db = db_pool.handle();
+        let db = db_pool.handle().await;
 
         Ok(db)
     }
