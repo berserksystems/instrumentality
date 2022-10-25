@@ -2,9 +2,9 @@ name: Instrumentality Run.
 
 on:
   push:
-    branches: [ main ]
+    branches: [ mongodb_transactions ]
   pull_request:
-    branches: [ main ]
+    branches: [ mongodb_transactions ]
 
 jobs:
   run:
@@ -22,10 +22,10 @@ jobs:
         override: true
 
     - name: Start MongoDB.
-      uses: supercharge/mongodb-github-action@1.7.0
+      uses: supercharge/mongodb-github-action@1.8.0
       with:
-        mongodb-username: instrumentality
-        mongodb-password: mankind
+        mongodb-version: '5.0'
+        mongodb-replica-set: rstest
 
     - name: Create TLS certificates.
       run: |

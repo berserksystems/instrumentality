@@ -59,7 +59,7 @@ pub async fn open(
     let port = &config.mongodb.port;
     let database = &config.mongodb.database;
     let auth_database = &config.mongodb.auth_database;
-    let creds = Credential::builder()
+    let _creds = Credential::builder()
         .username(user.to_string())
         .password(password.to_string())
         .source(auth_database.to_string())
@@ -69,7 +69,7 @@ pub async fn open(
         ServerAddress::parse(format!("{}:{}", hosts, port)).unwrap();
 
     let client_opts = ClientOptions::builder()
-        .credential(creds)
+        // .credential(creds)
         .hosts(vec![server_addr])
         // .retry_reads(false)
         // .retry_writes(false)
