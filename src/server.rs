@@ -115,7 +115,7 @@ fn build_app(config: IConfig, db_pool: DBPool, handle: Handle) -> Router {
 }
 
 fn build_address(address: &str, port: &str) -> SocketAddr {
-    format!("{}:{}", address, port).parse().unwrap()
+    format!("{address}:{port}").parse().unwrap()
 }
 
 async fn build_tls(cert: &str, key: &str) -> RustlsConfig {

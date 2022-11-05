@@ -243,8 +243,8 @@ pub async fn process(
             let subj_coll: Collection<Subject> = db.collection("subjects");
             subj_coll
                 .update_one_with_session(
-                    doc! {&format!("profiles.{}", platform): &username},
-                    doc! {"$set": {&format!("profiles.{}.$", platform): id}},
+                    doc! {&format!("profiles.{platform}"): &username},
+                    doc! {"$set": {&format!("profiles.{platform}.$"): id}},
                     None,
                     &mut db.session,
                 )

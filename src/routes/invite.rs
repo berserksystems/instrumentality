@@ -44,7 +44,7 @@ impl Referral {
         getrandom::getrandom(refcode_bytes).unwrap();
         let mut code = String::new();
         for b in refcode_bytes {
-            write!(&mut code, "{:0>2X}", b).unwrap();
+            write!(&mut code, "{b:0>2X}").unwrap();
         }
         code
     }

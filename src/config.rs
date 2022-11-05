@@ -88,7 +88,7 @@ pub struct NetworkConfig {
 pub struct MDBConfig {
     pub user: String,
     pub password: String,
-    pub hosts: String, // This should be an array.
+    pub address: String,
     pub port: String,
     pub database: String,
     pub auth_database: String,

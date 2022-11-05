@@ -47,7 +47,7 @@ impl User {
         getrandom::getrandom(key_bytes).unwrap();
         let mut key = String::new();
         for b in key_bytes {
-            write!(&mut key, "{:0>2X}", b).unwrap();
+            write!(&mut key, "{b:0>2X}").unwrap();
         }
         key
     }

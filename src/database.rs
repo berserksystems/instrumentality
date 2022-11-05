@@ -30,7 +30,7 @@ impl DBPool {
         session.start_transaction(None).await.unwrap();
         DBHandle {
             db: self.client.database(&self.database),
-            session: session,
+            session,
         }
     }
 }
@@ -55,7 +55,7 @@ pub async fn open(
 ) -> Result<DBPool, Box<dyn std::error::Error>> {
     let user = &config.mongodb.user;
     let password = &config.mongodb.password;
-    let hosts = &config.mongodb.hosts;
+    let address = &config.mongodb.address;
     let port = &config.mongodb.port;
     let database = &config.mongodb.database;
     let auth_database = &config.mongodb.auth_database;
@@ -66,7 +66,7 @@ pub async fn open(
         .build();
 
     let server_addr =
-        ServerAddress::parse(format!("{}:{}", hosts, port)).unwrap();
+        ServerAddress::parse(format!("{address}:{port}")).unwrap();
 
     let client_opts = ClientOptions::builder()
         // .credential(creds)
@@ -78,9 +78,6 @@ pub async fn open(
         .server_selection_timeout(Duration::new(1, 0))
         .build();
 
-    // assert!(!client_opts.retry_writes.unwrap());
-
-    // tracing::error!("{:?}", client_opts);
     let mongo_client = Client::with_options(client_opts).unwrap();
     let database = mongo_client.database(database);
 

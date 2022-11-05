@@ -33,7 +33,7 @@ pub async fn add(
     }
 
     if let Some(queue_id) = datas.queue_id.as_ref() {
-        if get_queue_item(&queue_id, &user, &mut db).await.is_none() {
+        if get_queue_item(queue_id, &user, &mut db).await.is_none() {
             return Err((
                 StatusCode::BAD_REQUEST,
                 Json(Error::new("Invalid queue ID.")),
@@ -87,14 +87,14 @@ async fn process(
 ) -> bool {
     let data_coll: Collection<Data> = db.collection("data");
 
-    let datas = datas.tag(&user.uuid).verify_for_config(&config);
+    let datas = datas.tag(&user.uuid).verify_for_config(config);
 
     if datas.data.is_empty() {
         return false;
     }
 
     if let Some(queue_id) = &datas.queue_id.clone() {
-        let queue_item = get_queue_item(&queue_id, user, db).await;
+        let queue_item = get_queue_item(queue_id, user, db).await;
 
         if queue_item.is_none() {
             return false;
@@ -124,13 +124,15 @@ async fn process(
         } else {
             data_coll
                 .insert_many_with_session(datas.data, None, &mut db.session)
-                .await.unwrap();
+                .await
+                .unwrap();
             db.session.commit_transaction().await.is_ok()
         }
     } else {
         data_coll
             .insert_many_with_session(datas.data, None, &mut db.session)
-            .await.unwrap();
+            .await
+            .unwrap();
         db.session.commit_transaction().await.is_ok()
     }
 }

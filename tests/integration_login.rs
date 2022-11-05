@@ -6,6 +6,28 @@ use axum::http::StatusCode;
 use common::Environment;
 use tower::Service;
 
+/// login tests:
+/// - Authentication of the test user works as expected.
+/// - Login route returns the correct information:
+///     - an OK,
+///     - the user info,
+///     - empty subjects and groups array
+#[tokio::test]
+async fn login() {
+    use instrumentality::response::LoginResponse;
+
+    let mut env: Environment = Environment::default().await;
+
+    let lr: LoginResponse = env.login().await;
+
+    assert_eq!(lr.response, "OK".to_string());
+    assert_eq!(lr.user, env.user.clone());
+    assert!(lr.subjects.is_empty());
+    assert!(lr.groups.is_empty());
+
+    env.cleanup().await;
+}
+
 /// login_no_key tests:
 /// - Authentication without a X-API-KEY header returns not authorised.
 #[tokio::test]
@@ -65,28 +87,6 @@ async fn login_bad_key() {
     let er: Error = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(er.response, "ERROR".to_string());
-
-    env.cleanup().await;
-}
-
-/// login tests:
-/// - Authentication of the test user works as expected.
-/// - Login route returns the correct information:
-///     - an OK,
-///     - the user info,
-///     - empty subjects and groups array
-#[tokio::test]
-async fn login() {
-    use instrumentality::response::LoginResponse;
-
-    let mut env: Environment = Environment::default().await;
-
-    let lr: LoginResponse = env.login().await;
-
-    assert_eq!(lr.response, "OK".to_string());
-    assert_eq!(lr.user, env.user.clone());
-    assert!(lr.subjects.is_empty());
-    assert!(lr.groups.is_empty());
 
     env.cleanup().await;
 }
