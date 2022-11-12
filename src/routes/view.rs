@@ -6,7 +6,7 @@
 //! <https://docs.berserksystems.com/endpoints/view/>.
 
 use axum::{extract::Query, http::StatusCode, Json};
-use futures::TryStreamExt;
+use futures_util::TryStreamExt;
 use mongodb::bson::doc;
 use mongodb::bson::Document;
 use mongodb::options::FindOptions;

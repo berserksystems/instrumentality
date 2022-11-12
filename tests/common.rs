@@ -15,7 +15,7 @@ use axum::body::Body;
 use axum::http::Method;
 use axum::http::Request;
 use axum::http::StatusCode;
-use axum::Router;
+use axum::RouterService;
 use axum_server::Handle;
 use chrono::Utc;
 use instrumentality::config;
@@ -31,7 +31,7 @@ use uuid::Uuid;
 pub const TEST_ENVIRONMENT_CONFIG: &str = "InstrumentalityTest.toml";
 
 pub struct Environment {
-    pub app: Router,
+    pub app: RouterService,
     pub user: User,
     pub config: IConfig,
     pub handle: Handle,
@@ -48,6 +48,7 @@ impl Environment {
         let test_db_id = Uuid::new_v4().to_string();
         config.mongodb.database = test_db_id.clone();
         let (app, _, _, handle) = server::build_server(&config).await;
+        let app = app.into_service();
 
         let user = User::new("test");
         Self::inject_account(&config, &user).await;
@@ -62,7 +63,10 @@ impl Environment {
 
     pub async fn cleanup(&self) {
         let database = database::open(&self.config).await.unwrap();
-        database::drop_database(&database.handle().await).await;
+        database::drop_database(
+            &database.handle_with_started_transaction().await,
+        )
+        .await;
     }
 
     // This is only used in tests, so it flags as dead code.
@@ -93,7 +97,7 @@ impl Environment {
         let database = database::open(&config).await.unwrap();
 
         let _user_coll = database
-            .handle()
+            .handle_with_started_transaction()
             .await
             .collection::<User>("users")
             .insert_one(user, None)

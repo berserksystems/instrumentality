@@ -25,9 +25,9 @@ pub struct DeleteData {
 
 // This is ugly. Can probably do better than an if-else.
 pub async fn delete(
-    Json(data): Json<DeleteData>,
-    mut db: DBHandle,
     user: User,
+    mut db: DBHandle,
+    Json(data): Json<DeleteData>,
 ) -> impl IntoResponse {
     // UUID of the requester.
     let req_uuid = user.uuid;

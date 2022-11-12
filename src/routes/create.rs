@@ -7,6 +7,7 @@
 
 use std::collections::HashMap;
 
+use axum::Extension;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::Utc;
 use mongodb::bson::doc;
@@ -38,10 +39,10 @@ pub enum CreateData {
 }
 
 pub async fn create(
-    Json(data): Json<CreateData>,
-    mut db: DBHandle,
     user: User,
-    config: IConfig,
+    mut db: DBHandle,
+    Extension(config): Extension<IConfig>,
+    Json(data): Json<CreateData>,
 ) -> impl IntoResponse {
     match data {
         CreateData::CreateSubject { .. } => {

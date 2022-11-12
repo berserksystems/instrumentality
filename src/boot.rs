@@ -47,7 +47,7 @@ last_fm = [\"now_playing\"]
 twitch_tv = [\"live\"]
 
 [mongodb]
-hosts = \"127.0.0.1\"
+address = \"127.0.0.1\"
 port = \"27017\"
 user = \"instrumentality\"
 password = \"mankind\"

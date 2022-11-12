@@ -7,6 +7,7 @@
 //!
 //! See [`Data`] for examples of valid data objects.
 
+use axum::Extension;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
 use mongodb::Collection;
@@ -20,10 +21,10 @@ use crate::routes::queue::InternalQueueItem;
 use crate::user::User;
 
 pub async fn add(
-    Json(datas): Json<Datas>,
-    config: IConfig,
     user: User,
     mut db: DBHandle,
+    Extension(config): Extension<IConfig>,
+    Json(datas): Json<Datas>,
 ) -> impl IntoResponse {
     if datas.data.is_empty() {
         return Err((

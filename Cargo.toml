@@ -18,22 +18,22 @@ name = "instrumentality"
 path = "src/lib.rs"
 
 [dependencies]
-axum = "0.5.16"
-axum-server = { version = "0.4.2", features = ["tls-rustls"] }
+axum = "0.6.0-rc.4"
+axum-server = { version = "0.4.3", features = ["tls-rustls"] }
 tower = { version = "0.4.13", features = ["timeout"] }
 tower-http = { version = "0.3.4", features = ["set-header"] }
-tracing = "0.1.36"
+tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 tokio = "1.21.2"
-tokio-stream = "0.1.10"
-futures = "0.3"
+tokio-stream = "0.1.11"
+futures-util = "0.3.25"
 
-mongodb = "2.3.0"
+mongodb = "2.3.1"
 toml = "0.5.9"
 chrono = { version = "0.4.22", default_features = false, features = ["serde"] }
-serde = "1.0.145"
-getrandom = "0.2.7"
-uuid = { version = "1.1.2", features = ["v4"] }
+serde = "1.0.147"
+getrandom = "0.2.8"
+uuid = { version = "1.2.1", features = ["v4"] }
 
 
 [dev-dependencies]

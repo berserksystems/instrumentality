@@ -2,9 +2,6 @@
 
 use std::collections::HashMap;
 
-use axum::async_trait;
-use axum::extract::{FromRequest, RequestParts};
-use axum::response::Response;
 use serde::Deserialize;
 
 #[derive(Clone, Deserialize)]
@@ -98,17 +95,4 @@ pub fn open(config_path: &str) -> Result<IConfig, Box<dyn std::error::Error>> {
     let config_str = &std::fs::read_to_string(config_path)?;
     let config: IConfig = toml::from_str(config_str)?;
     Ok(config)
-}
-
-#[async_trait]
-impl<B: Send> FromRequest<B> for IConfig {
-    type Rejection = Response;
-
-    async fn from_request(
-        request: &mut RequestParts<B>,
-    ) -> Result<Self, Self::Rejection> {
-        let config = request.extensions().get::<IConfig>().unwrap();
-
-        Ok(config.clone())
-    }
 }

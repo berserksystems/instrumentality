@@ -3,7 +3,8 @@
 use std::time::Duration;
 
 use axum::async_trait;
-use axum::extract::{FromRequest, RequestParts};
+use axum::extract::FromRequestParts;
+use axum::http::request::Parts;
 use axum::response::Response;
 use mongodb::bson::Document;
 use mongodb::options::{
@@ -25,9 +26,17 @@ pub struct DBPool {
 }
 
 impl DBPool {
-    pub async fn handle(&self) -> DBHandle {
+    pub async fn handle_with_started_transaction(&self) -> DBHandle {
         let mut session = self.client.start_session(None).await.unwrap();
         session.start_transaction(None).await.unwrap();
+        DBHandle {
+            db: self.client.database(&self.database),
+            session,
+        }
+    }
+
+    pub async fn handle(&self) -> DBHandle {
+        let session = self.client.start_session(None).await.unwrap();
         DBHandle {
             db: self.client.database(&self.database),
             session,
@@ -71,8 +80,6 @@ pub async fn open(
     let client_opts = ClientOptions::builder()
         // .credential(creds)
         .hosts(vec![server_addr])
-        // .retry_reads(false)
-        // .retry_writes(false)
         .connect_timeout(Duration::new(1, 0))
         .heartbeat_freq(Duration::new(1, 0))
         .server_selection_timeout(Duration::new(1, 0))
@@ -236,15 +243,19 @@ pub async fn drop_database(database: &DBHandle) {
 }
 
 #[async_trait]
-impl<B: Send> FromRequest<B> for DBHandle {
+impl<S> FromRequestParts<S> for DBHandle
+where
+    S: Send + Sync,
+{
     type Rejection = Response;
 
-    async fn from_request(
-        request: &mut RequestParts<B>,
+    async fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
     ) -> Result<Self, Self::Rejection> {
-        let db_pool = request.extensions().get::<DBPool>().unwrap();
+        let db_pool = parts.extensions.get::<DBPool>().unwrap();
 
-        let db = db_pool.handle().await;
+        let db = db_pool.handle_with_started_transaction().await;
 
         Ok(db)
     }

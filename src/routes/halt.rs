@@ -8,7 +8,8 @@
 use std::time::Duration;
 
 use axum::async_trait;
-use axum::extract::{FromRequest, RequestParts};
+use axum::extract::FromRequestParts;
+use axum::http::request::Parts;
 use axum::response::Response;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use axum_server::Handle;
@@ -35,13 +36,17 @@ pub struct ServerHandle {
 }
 
 #[async_trait]
-impl<B: Send> FromRequest<B> for ServerHandle {
+impl<S> FromRequestParts<S> for ServerHandle
+where
+    S: Send + Sync,
+{
     type Rejection = Response;
 
-    async fn from_request(
-        request: &mut RequestParts<B>,
+    async fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
     ) -> Result<Self, Self::Rejection> {
-        let handle = request.extensions().get::<Handle>().unwrap();
+        let handle = parts.extensions.get::<Handle>().unwrap();
         Ok(ServerHandle {
             handle: handle.clone(),
         })

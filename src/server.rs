@@ -4,15 +4,12 @@
 
 use std::net::SocketAddr;
 
-// use axum::extract::ContentLengthLimit;
 use axum::http::header::{self, HeaderValue};
 use axum::http::StatusCode;
 use axum::middleware;
-// use axum::middleware::from_extractor;
 use axum::{
     error_handling::HandleErrorLayer,
     extract::Extension,
-    handler::Handler,
     routing::{delete, get, post},
     Json, Router,
 };
@@ -111,7 +108,7 @@ fn build_app(config: IConfig, db_pool: DBPool, handle: Handle) -> Router {
         .route("/update", post(update))
         .route("/view", get(view))
         .layer(service_builder)
-        .fallback(default.into_service())
+        .fallback(default)
 }
 
 fn build_address(address: &str, port: &str) -> SocketAddr {

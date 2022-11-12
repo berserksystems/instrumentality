@@ -37,9 +37,9 @@ pub enum UpdateData {
 }
 
 pub async fn update(
-    Json(data): Json<UpdateData>,
-    mut db: DBHandle,
     user: User,
+    mut db: DBHandle,
+    Json(data): Json<UpdateData>,
 ) -> impl IntoResponse {
     match data {
         UpdateData::UpdateSubject { .. } => {

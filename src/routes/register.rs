@@ -27,8 +27,8 @@ pub struct RegisterError;
 // Invites can't be double used but we are double requesting with every attempt
 // /register wrt invite_valid and use_invite.
 pub async fn register(
-    Json(req): Json<RegisterRequest>,
     mut db: DBHandle,
+    Json(req): Json<RegisterRequest>,
 ) -> impl IntoResponse {
     if !username_available(&req, &mut db).await {
         return Err((

@@ -63,6 +63,7 @@
 //!
 //! Additionally, profiles under a single subject become hot by association.
 
+use axum::Extension;
 use axum::{extract::Query, http::StatusCode, response::IntoResponse, Json};
 use chrono::offset::TimeZone;
 use chrono::{DateTime, Duration, Utc};
@@ -115,12 +116,12 @@ pub struct QueueQuery {
 }
 
 pub async fn queue(
+    user: User,
+    mut db: DBHandle,
+    Extension(config): Extension<IConfig>,
     // We use an Option so we can return a useful error when /queue is called
     // with no arguments.
     queue_query: Option<Query<QueueQuery>>,
-    mut db: DBHandle,
-    user: User,
-    config: IConfig,
 ) -> impl IntoResponse {
     if queue_query.is_none() {
         return Err((
@@ -396,16 +397,14 @@ pub async fn clear_old_locks(db: &mut DBHandle, timeout: Duration) {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
     let thirty_seconds_ago = Utc::now() - timeout;
     q_coll
-        .update_many_with_session(
+        .update_many(
             doc! {"lock_acquired_at": {"$lt": thirty_seconds_ago.to_string()}},
             doc! {"$set":
                 {"lock_acquired_at": Bson::Null,
                 "lock_holder": Bson::Null}
             },
             None,
-            &mut db.session,
         )
         .await
         .unwrap();
-    db.session.commit_transaction().await.unwrap();
 }

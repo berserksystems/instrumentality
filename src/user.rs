@@ -2,12 +2,13 @@
 
 use std::fmt::Write;
 
-use axum::extract::{FromRequest, RequestParts};
-use axum::http::StatusCode;
+use axum::extract::FromRequestParts;
+use axum::http::{request::Parts, StatusCode};
 use axum::response::{IntoResponse, Response};
-use axum::{async_trait, Json};
+use axum::{async_trait, RequestPartsExt};
+use axum::{Extension, Json};
 use chrono::{DateTime, Utc};
-use futures::stream::TryStreamExt;
+use futures_util::TryStreamExt;
 use mongodb::SessionCursor;
 use mongodb::{bson::doc, Collection, Cursor};
 use serde::{Deserialize, Serialize};
@@ -103,15 +104,18 @@ impl User {
 }
 
 #[async_trait]
-impl<B: Send> FromRequest<B> for User {
+impl<S> FromRequestParts<S> for User
+where
+    S: Send + Sync,
+{
     type Rejection = Response;
 
-    async fn from_request(
-        request: &mut RequestParts<B>,
+    async fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
     ) -> Result<Self, Self::Rejection> {
-        let db = request.extensions().get::<DBPool>().unwrap();
-
-        let key = request.headers().get("x-api-key");
+        let db = parts.extract::<Extension<DBPool>>().await.unwrap();
+        let key = parts.headers.get("x-api-key");
         match key {
             Some(key) => {
                 let key = key.to_str().unwrap();
