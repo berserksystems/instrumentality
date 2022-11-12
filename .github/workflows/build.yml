@@ -2,9 +2,9 @@ name: Instrumentality Build.
 
 on:
   push:
-    branches: [ mongodb_transactions ]
+    branches: [ main ]
   pull_request:
-    branches: [ mongodb_transactions ]
+    branches: [ main ]
 
 jobs:
   build:

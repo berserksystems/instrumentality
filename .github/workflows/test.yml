@@ -2,9 +2,9 @@ name: Instrumentality Test.
 
 on:
   push:
-    branches: [ mongodb_transactions ]
+    branches: [ main ]
   pull_request:
-    branches: [ mongodb_transactions ]
+    branches: [ main ]
 
 jobs:
   test:
