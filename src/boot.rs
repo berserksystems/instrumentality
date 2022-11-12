@@ -49,10 +49,7 @@ twitch_tv = [\"live\"]
 [mongodb]
 address = \"127.0.0.1\"
 port = \"27017\"
-user = \"instrumentality\"
-password = \"mankind\"
 database = \"instrumentality\"
-auth_database = \"admin\"
 
 [settings]
 log_level = \"INFO\"

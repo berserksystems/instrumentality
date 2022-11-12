@@ -1,15 +1,11 @@
 //! Database functions and implementations for Instrumentality.
 
-use std::time::Duration;
-
 use axum::async_trait;
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
 use axum::response::Response;
 use mongodb::bson::Document;
-use mongodb::options::{
-    ClientOptions, Credential, IndexOptions, ServerAddress,
-};
+use mongodb::options::IndexOptions;
 use mongodb::results::CreateIndexResult;
 use mongodb::ClientSession;
 use mongodb::{bson::doc, Client, Collection, Database, IndexModel};
@@ -62,31 +58,9 @@ impl DBHandle {
 pub async fn open(
     config: &IConfig,
 ) -> Result<DBPool, Box<dyn std::error::Error>> {
-    let user = &config.mongodb.user;
-    let password = &config.mongodb.password;
-    let address = &config.mongodb.address;
-    let port = &config.mongodb.port;
-    let database = &config.mongodb.database;
-    let auth_database = &config.mongodb.auth_database;
-    let _creds = Credential::builder()
-        .username(user.to_string())
-        .password(password.to_string())
-        .source(auth_database.to_string())
-        .build();
-
-    let server_addr =
-        ServerAddress::parse(format!("{address}:{port}")).unwrap();
-
-    let client_opts = ClientOptions::builder()
-        // .credential(creds)
-        .hosts(vec![server_addr])
-        .connect_timeout(Duration::new(1, 0))
-        .heartbeat_freq(Duration::new(1, 0))
-        .server_selection_timeout(Duration::new(1, 0))
-        .build();
-
-    let mongo_client = Client::with_options(client_opts).unwrap();
-    let database = mongo_client.database(database);
+    let mongo_client =
+        Client::with_options(config.mongodb.client_opts()).unwrap();
+    let database = mongo_client.database(&config.mongodb.database);
 
     // It is only at this point that MongoDB actually makes a connection.
     database

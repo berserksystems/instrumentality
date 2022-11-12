@@ -1,7 +1,9 @@
 //! Functions for the configuration file.
 
 use std::collections::HashMap;
+use std::time::Duration;
 
+use mongodb::options::{ClientOptions, Credential, ServerAddress};
 use serde::Deserialize;
 
 #[derive(Clone, Deserialize)]
@@ -83,12 +85,48 @@ pub struct NetworkConfig {
 
 #[derive(Clone, Deserialize)]
 pub struct MDBConfig {
-    pub user: String,
-    pub password: String,
     pub address: String,
     pub port: String,
     pub database: String,
+    pub credentials: Option<Credentials>,
+}
+
+#[derive(Clone, Deserialize)]
+pub struct Credentials {
+    pub username: String,
+    pub password: String,
     pub auth_database: String,
+}
+
+impl MDBConfig {
+    pub fn client_opts(&self) -> ClientOptions {
+        let server_addr =
+            ServerAddress::parse(format!("{}:{}", self.address, self.port))
+                .unwrap();
+
+        if let Some(credentials) = &self.credentials {
+            let creds = Credential::builder()
+                .username(credentials.username.to_string())
+                .password(credentials.password.to_string())
+                .source(credentials.auth_database.to_string())
+                .build();
+
+            ClientOptions::builder()
+                .credential(creds)
+                .hosts(vec![server_addr])
+                .connect_timeout(Duration::new(1, 0))
+                .heartbeat_freq(Duration::new(1, 0))
+                .server_selection_timeout(Duration::new(1, 0))
+                .build()
+        } else {
+            ClientOptions::builder()
+                .hosts(vec![server_addr])
+                .connect_timeout(Duration::new(1, 0))
+                .heartbeat_freq(Duration::new(1, 0))
+                .server_selection_timeout(Duration::new(1, 0))
+                .build()
+        }
+    }
 }
 
 pub fn open(config_path: &str) -> Result<IConfig, Box<dyn std::error::Error>> {
