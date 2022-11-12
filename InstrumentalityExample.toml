@@ -1,22 +1,18 @@
 [content_types]
-instagram = ["post", "story"]
+instagram = ["post", "story", "live"]
 twitter = ["tweet", "like", "retweet", "story"]
 last_fm = ["scrobble"]
 twitch_tv = ["stream_start", "video", "stream_end"]
 
 [presence_types]
-instagram = ["live"]
 twitter = ["follower_count_increase"]
 last_fm = ["now_playing"]
 twitch_tv = ["live"]
 
 [mongodb]
-hosts = "127.0.0.1"
+address = "127.0.0.1"
 port = "27017"
-user = "instrumentality"
-password = "mankind"
 database = "instrumentality"
-auth_database = "admin"
 
 [settings]
 log_level = "INFO"

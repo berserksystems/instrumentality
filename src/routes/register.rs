@@ -27,16 +27,16 @@ pub struct RegisterError;
 // Invites can't be double used but we are double requesting with every attempt
 // /register wrt invite_valid and use_invite.
 pub async fn register(
+    mut db: DBHandle,
     Json(req): Json<RegisterRequest>,
-    db: DBHandle,
 ) -> impl IntoResponse {
-    if !username_available(&req, &db).await {
+    if !username_available(&req, &mut db).await {
         return Err((
             StatusCode::BAD_REQUEST,
             Json(Error::new("This username is taken.")),
         ));
     }
-    let result = register_user(&req, &db).await;
+    let result = register_user(&req, &mut db).await;
     match result {
         Ok(user) => Ok((StatusCode::OK, Json(RegisterResponse::new(user)))),
         Err(_) => Err((
@@ -46,24 +46,33 @@ pub async fn register(
     }
 }
 
-async fn username_available(req: &RegisterRequest, db: &DBHandle) -> bool {
+async fn username_available(req: &RegisterRequest, db: &mut DBHandle) -> bool {
     let users_coll: Collection<User> = db.collection("users");
     let result = users_coll
-        .find_one(doc! {"user": req.name.as_str()}, None)
+        .find_one_with_session(
+            doc! {"user": req.name.as_str()},
+            None,
+            &mut db.session,
+        )
         .await;
     matches!(result, Ok(None))
 }
 
 async fn register_user(
     req: &RegisterRequest,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) -> Result<User, RegisterError> {
     let user = User::new(&req.name);
     let result = use_invite(&user, req, db).await;
     if result.is_ok() {
         let users_coll: Collection<User> = db.collection("users");
 
-        let result = users_coll.insert_one(&user, None).await;
+        users_coll
+            .insert_one_with_session(&user, None, &mut db.session)
+            .await
+            .unwrap();
+
+        let result = db.session.commit_transaction().await;
         match result {
             Ok(_) => Ok(user),
             _ => Err(RegisterError),
@@ -76,14 +85,15 @@ async fn register_user(
 async fn use_invite(
     user: &User,
     req: &RegisterRequest,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) -> Result<Referral, RegisterError> {
     let refs_coll: Collection<Referral> = db.collection("referrals");
     let result = refs_coll
-        .find_one_and_update(
+        .find_one_and_update_with_session(
             doc! {"code": req.code.as_str(), "used": false},
             doc! {"$set": {"used": true, "used_by": &user.uuid}},
             None,
+            &mut db.session,
         )
         .await
         .unwrap();

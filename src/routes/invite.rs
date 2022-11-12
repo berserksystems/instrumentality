@@ -44,7 +44,7 @@ impl Referral {
         getrandom::getrandom(refcode_bytes).unwrap();
         let mut code = String::new();
         for b in refcode_bytes {
-            write!(&mut code, "{:0>2X}", b).unwrap();
+            write!(&mut code, "{b:0>2X}").unwrap();
         }
         code
     }
@@ -52,12 +52,16 @@ impl Referral {
 
 pub async fn invite(
     user: User,
-    db: DBHandle,
+    mut db: DBHandle,
 ) -> Result<(StatusCode, Json<InviteResponse>), (StatusCode, Json<Error>)> {
     let referral = Referral::new(user.uuid);
     let refer_coll: Collection<Referral> = db.collection("referrals");
-    refer_coll.insert_one(&referral, None).await.unwrap();
+    refer_coll
+        .insert_one_with_session(&referral, None, &mut db.session)
+        .await
+        .unwrap();
 
+    db.session.commit_transaction().await.unwrap();
     Ok((StatusCode::OK, Json(InviteResponse::new(referral.code))))
 }
 

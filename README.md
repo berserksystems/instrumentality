@@ -31,7 +31,6 @@ This is an Axum web server that reads and writes data to MongoDB.
 
 ### Future
 #### Minor
-- [ ] Transactions
 - [ ] Live config reloading.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.

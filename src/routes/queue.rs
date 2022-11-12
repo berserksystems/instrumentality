@@ -63,6 +63,7 @@
 //!
 //! Additionally, profiles under a single subject become hot by association.
 
+use axum::Extension;
 use axum::{extract::Query, http::StatusCode, response::IntoResponse, Json};
 use chrono::offset::TimeZone;
 use chrono::{DateTime, Duration, Utc};
@@ -115,12 +116,12 @@ pub struct QueueQuery {
 }
 
 pub async fn queue(
+    user: User,
+    mut db: DBHandle,
+    Extension(config): Extension<IConfig>,
     // We use an Option so we can return a useful error when /queue is called
     // with no arguments.
     queue_query: Option<Query<QueueQuery>>,
-    db: DBHandle,
-    user: User,
-    config: IConfig,
 ) -> impl IntoResponse {
     if queue_query.is_none() {
         return Err((
@@ -156,7 +157,7 @@ pub async fn queue(
 
         let q_coll: Collection<InternalQueueItem> = db.collection("queue");
         let result = q_coll
-            .find_one_and_update(
+            .find_one_and_update_with_session(
                 doc! {"lock_holder": Bson::Null, "platform": {"$in": &platforms}},
                 doc! {"$set": 
                         {
@@ -165,6 +166,7 @@ pub async fn queue(
                         }
                     },
                 filter,
+                &mut db.session,
             )
             .await
             .unwrap();
@@ -172,10 +174,11 @@ pub async fn queue(
             let username_hint: String = get_username_hint(
                 &queue_item.platform_id,
                 &queue_item.platform,
-                &db,
+                &mut db,
             )
             .await;
 
+            db.session.commit_transaction().await.unwrap();
             Ok((
                 StatusCode::OK,
                 Json(QueueResponse::new(
@@ -207,13 +210,13 @@ pub async fn process(
     platform: &str,
     added_by: &str,
     username: Option<String>,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) -> bool {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
     // If this is a metadata update...
     if let Some(username) = username {
         let find_result = q_coll
-            .find_one(
+            .find_one_with_session(
                 // It's possible we haven't found an ID for this user yet.
                 doc! {
                     "queue_id" : queue_id,
@@ -223,6 +226,7 @@ pub async fn process(
                     "confirmed_id": false
                 },
                 None,
+                &mut db.session,
             )
             .await
             .unwrap();
@@ -239,10 +243,11 @@ pub async fn process(
             // username.
             let subj_coll: Collection<Subject> = db.collection("subjects");
             subj_coll
-                .update_one(
-                    doc! {&format!("profiles.{}", platform): &username},
-                    doc! {"$set": {&format!("profiles.{}.$", platform): id}},
+                .update_one_with_session(
+                    doc! {&format!("profiles.{platform}"): &username},
+                    doc! {"$set": {&format!("profiles.{platform}.$"): id}},
                     None,
+                    &mut db.session,
                 )
                 .await
                 .unwrap();
@@ -251,7 +256,7 @@ pub async fn process(
     }
 
     let q_update_result = q_coll
-        .update_one(
+        .update_one_with_session(
             doc! {"queue_id" : queue_id, "lock_holder": added_by},
             doc! {"$set":
                 {
@@ -261,6 +266,7 @@ pub async fn process(
                 }
             },
             None,
+            &mut db.session,
         )
         .await
         .unwrap();
@@ -271,32 +277,35 @@ pub async fn process(
 pub async fn add_queue_item(
     platform_id: &str,
     platform: &str,
-    db: &DBHandle,
+    db: &mut DBHandle,
     confirmed_id: bool,
 ) {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
     let queue_item = q_coll
-        .find_one(
+        .find_one_with_session(
             doc! {"platform_id": platform_id, "platform": platform},
             None,
+            &mut db.session,
         )
         .await
         .unwrap();
     if queue_item.is_some() {
         q_coll
-            .update_one(
+            .update_one_with_session(
                 doc! {"platform_id": platform_id, "platform": platform},
                 doc! {"$inc": {"references": 1_u32}},
                 None,
+                &mut db.session,
             )
             .await
             .unwrap();
         if confirmed_id {
             q_coll
-                .update_one(
+                .update_one_with_session(
                     doc! {"platform_id": platform_id, "platform": platform},
                     doc! {"$set": {"confirmed_id": true}},
                     None,
+                    &mut db.session,
                 )
                 .await
                 .unwrap();
@@ -306,33 +315,38 @@ pub async fn add_queue_item(
             platform_id.to_string(),
             platform.to_string(),
         );
-        q_coll.insert_one(queue_item, None).await.unwrap();
+        q_coll
+            .insert_one_with_session(queue_item, None, &mut db.session)
+            .await
+            .unwrap();
     }
 }
 
 pub async fn remove_queue_item(
     platform_id: &str,
     platform: &str,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
     let result = q_coll
-        .delete_one(
+        .delete_one_with_session(
             doc! {
                 "platform_id": platform_id,
                 "platform": platform,
                 "references": 1
             },
             None,
+            &mut db.session,
         )
         .await
         .unwrap();
     if result.deleted_count == 0 {
         q_coll
-            .update_one(
+            .update_one_with_session(
                 doc! {"platform_id": platform_id, "platform": platform},
                 doc! {"$inc": {"references": -1_i32}},
                 None,
+                &mut db.session,
             )
             .await
             .unwrap();
@@ -342,12 +356,12 @@ pub async fn remove_queue_item(
 pub async fn get_username_hint(
     platform_id: &str,
     platform: &str,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) -> String {
     async fn from_meta(
         platform_id: &str,
         platform: &str,
-        db: &DBHandle,
+        db: &mut DBHandle,
     ) -> Option<String> {
         let filter = FindOneOptions::builder()
             .projection(doc! {"username": 1_u32})
@@ -361,7 +375,11 @@ pub async fn get_username_hint(
         let data_coll: Collection<Data> = db.collection("data");
         let username = data_coll
             .clone_with_type::<Username>()
-            .find_one(doc! {"id": &platform_id, "platform": &platform}, filter)
+            .find_one_with_session(
+                doc! {"id": &platform_id, "platform": &platform},
+                filter,
+                &mut db.session,
+            )
             .await;
 
         if let Ok(Some(username)) = username {
@@ -375,7 +393,7 @@ pub async fn get_username_hint(
         .unwrap_or_else(|| platform_id.to_string())
 }
 
-pub async fn clear_old_locks(db: &DBHandle, timeout: Duration) {
+pub async fn clear_old_locks(db: &mut DBHandle, timeout: Duration) {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
     let thirty_seconds_ago = Utc::now() - timeout;
     q_coll

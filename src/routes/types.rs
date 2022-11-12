@@ -5,12 +5,13 @@
 //! See endpoint documentation at
 //! <https://docs.berserksystems.com/endpoints/types/>.
 
+use axum::Extension;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 
 use crate::config::IConfig;
 use crate::response::TypesResponse;
 
-pub async fn types(config: IConfig) -> impl IntoResponse {
+pub async fn types(Extension(config): Extension<IConfig>) -> impl IntoResponse {
     let tr = TypesResponse::new(config.content_types, config.presence_types);
 
     (StatusCode::OK, Json(tr))

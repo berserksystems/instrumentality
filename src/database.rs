@@ -1,13 +1,13 @@
 //! Database functions and implementations for Instrumentality.
 
-use std::time::Duration;
-
 use axum::async_trait;
-use axum::extract::{FromRequest, RequestParts};
+use axum::extract::FromRequestParts;
+use axum::http::request::Parts;
 use axum::response::Response;
 use mongodb::bson::Document;
-use mongodb::options::{ClientOptions, IndexOptions};
+use mongodb::options::IndexOptions;
 use mongodb::results::CreateIndexResult;
+use mongodb::ClientSession;
 use mongodb::{bson::doc, Client, Collection, Database, IndexModel};
 
 use crate::config::IConfig;
@@ -22,15 +22,27 @@ pub struct DBPool {
 }
 
 impl DBPool {
-    pub fn handle(&self) -> DBHandle {
+    pub async fn handle_with_started_transaction(&self) -> DBHandle {
+        let mut session = self.client.start_session(None).await.unwrap();
+        session.start_transaction(None).await.unwrap();
         DBHandle {
             db: self.client.database(&self.database),
+            session,
+        }
+    }
+
+    pub async fn handle(&self) -> DBHandle {
+        let session = self.client.start_session(None).await.unwrap();
+        DBHandle {
+            db: self.client.database(&self.database),
+            session,
         }
     }
 }
 
 pub struct DBHandle {
     db: Database,
+    pub session: ClientSession,
 }
 
 impl DBHandle {
@@ -46,21 +58,9 @@ impl DBHandle {
 pub async fn open(
     config: &IConfig,
 ) -> Result<DBPool, Box<dyn std::error::Error>> {
-    let user = &config.mongodb.user;
-    let password = &config.mongodb.password;
-    let hosts = &config.mongodb.hosts;
-    let port = &config.mongodb.port;
-    let database = &config.mongodb.database;
-    let auth_database = &config.mongodb.auth_database;
-    let mut mongo_options = ClientOptions::parse(format!(
-        "mongodb://{user}:{password}@{hosts}:{port}/?authSource={auth_database}"
-    ))
-    .await?;
-    mongo_options.connect_timeout = Some(Duration::new(1, 0));
-    mongo_options.heartbeat_freq = Some(Duration::new(1, 0));
-    mongo_options.server_selection_timeout = Some(Duration::new(1, 0));
-    let mongo_client = Client::with_options(mongo_options).unwrap();
-    let database = mongo_client.database(database);
+    let mongo_client =
+        Client::with_options(config.mongodb.client_opts()).unwrap();
+    let database = mongo_client.database(&config.mongodb.database);
 
     // It is only at this point that MongoDB actually makes a connection.
     database
@@ -217,15 +217,19 @@ pub async fn drop_database(database: &DBHandle) {
 }
 
 #[async_trait]
-impl<B: Send> FromRequest<B> for DBHandle {
+impl<S> FromRequestParts<S> for DBHandle
+where
+    S: Send + Sync,
+{
     type Rejection = Response;
 
-    async fn from_request(
-        request: &mut RequestParts<B>,
+    async fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
     ) -> Result<Self, Self::Rejection> {
-        let db_pool = request.extensions().get::<DBPool>().unwrap();
+        let db_pool = parts.extensions.get::<DBPool>().unwrap();
 
-        let db = db_pool.handle();
+        let db = db_pool.handle_with_started_transaction().await;
 
         Ok(db)
     }

@@ -7,6 +7,7 @@
 //!
 //! See [`Data`] for examples of valid data objects.
 
+use axum::Extension;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
 use mongodb::Collection;
@@ -20,10 +21,10 @@ use crate::routes::queue::InternalQueueItem;
 use crate::user::User;
 
 pub async fn add(
-    Json(datas): Json<Datas>,
-    config: IConfig,
     user: User,
-    db: DBHandle,
+    mut db: DBHandle,
+    Extension(config): Extension<IConfig>,
+    Json(datas): Json<Datas>,
 ) -> impl IntoResponse {
     if datas.data.is_empty() {
         return Err((
@@ -33,7 +34,7 @@ pub async fn add(
     }
 
     if let Some(queue_id) = datas.queue_id.as_ref() {
-        if get_queue_item(&queue_id, &user, &db).await.is_none() {
+        if get_queue_item(queue_id, &user, &mut db).await.is_none() {
             return Err((
                 StatusCode::BAD_REQUEST,
                 Json(Error::new("Invalid queue ID.")),
@@ -41,7 +42,7 @@ pub async fn add(
         }
     }
 
-    match process(datas, &config, &user, &db).await {
+    match process(datas, &config, &user, &mut db).await {
         true => Ok((StatusCode::CREATED, Json(Ok::new()))),
         false => Err((
             StatusCode::BAD_REQUEST,
@@ -57,13 +58,14 @@ pub async fn add(
 async fn get_queue_item(
     queue_id: &str,
     user: &User,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) -> Option<InternalQueueItem> {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
     let queue_item = q_coll
-        .find_one(
+        .find_one_with_session(
             doc! {"queue_id": &queue_id, "lock_holder": &user.uuid },
             None,
+            &mut db.session,
         )
         .await
         .unwrap();
@@ -82,18 +84,18 @@ async fn process(
     datas: Datas,
     config: &IConfig,
     user: &User,
-    db: &DBHandle,
+    db: &mut DBHandle,
 ) -> bool {
     let data_coll: Collection<Data> = db.collection("data");
 
-    let datas = datas.tag(&user.uuid).verify_for_config(&config);
+    let datas = datas.tag(&user.uuid).verify_for_config(config);
 
     if datas.data.is_empty() {
         return false;
     }
 
     if let Some(queue_id) = &datas.queue_id.clone() {
-        let queue_item = get_queue_item(&queue_id, user, db).await;
+        let queue_item = get_queue_item(queue_id, user, db).await;
 
         if queue_item.is_none() {
             return false;
@@ -121,9 +123,17 @@ async fn process(
         if !process_success {
             false
         } else {
-            data_coll.insert_many(datas.data, None).await.is_ok()
+            data_coll
+                .insert_many_with_session(datas.data, None, &mut db.session)
+                .await
+                .unwrap();
+            db.session.commit_transaction().await.is_ok()
         }
     } else {
-        data_coll.insert_many(datas.data, None).await.is_ok()
+        data_coll
+            .insert_many_with_session(datas.data, None, &mut db.session)
+            .await
+            .unwrap();
+        db.session.commit_transaction().await.is_ok()
     }
 }

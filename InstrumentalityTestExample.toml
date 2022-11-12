@@ -8,12 +8,9 @@ PLATFORM_2 = ["listening_now"]
 PLATFORM_3 = ["streaming"]
 
 [mongodb]
-hosts = "127.0.0.1"
+address = "127.0.0.1"
 port = "27017"
-user = "instrumentality"
-password = "mankind"
 database = "instrumentality"
-auth_database = "admin"
 
 [settings]
 log_level = "INFO"

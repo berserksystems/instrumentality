@@ -25,41 +25,48 @@ pub struct DeleteData {
 
 // This is ugly. Can probably do better than an if-else.
 pub async fn delete(
-    Json(data): Json<DeleteData>,
-    db: DBHandle,
     user: User,
+    mut db: DBHandle,
+    Json(data): Json<DeleteData>,
 ) -> impl IntoResponse {
     // UUID of the requester.
     let req_uuid = user.uuid;
     let subj_coll: Collection<Subject> = db.collection("subjects");
     if let Ok(Some(subject)) = subj_coll
-        .find_one(doc! {"uuid": &data.uuid, "created_by": &req_uuid}, None)
+        .find_one_with_session(
+            doc! {"uuid": &data.uuid, "created_by": &req_uuid},
+            None,
+            &mut db.session,
+        )
         .await
     {
         let group_coll: Collection<Group> = db.collection("groups");
         let result = group_coll
-            .update_many(
+            .update_many_with_session(
                 doc! {"subjects": &data.uuid},
                 doc! {"$pull": {"subjects": &data.uuid}},
                 None,
+                &mut db.session,
             )
             .await;
 
         if result.is_ok() {
             subj_coll
-                .delete_one(
+                .delete_one_with_session(
                     doc! {"uuid": &data.uuid, "created_by": &req_uuid},
                     None,
+                    &mut db.session,
                 )
                 .await
                 .unwrap();
 
             for platform in subject.profiles.keys() {
                 for id in subject.profiles.get(platform).unwrap() {
-                    queue::remove_queue_item(id, platform, &db).await;
+                    queue::remove_queue_item(id, platform, &mut db).await;
                 }
             }
 
+            db.session.commit_transaction().await.unwrap();
             Ok((StatusCode::OK, Json(Ok::new())))
         } else {
             Err((
@@ -70,16 +77,22 @@ pub async fn delete(
     } else {
         let group_coll: Collection<Group> = db.collection("groups");
         if let Ok(Some(_)) = group_coll
-            .find_one(doc! {"uuid": &data.uuid, "created_by": &req_uuid}, None)
+            .find_one_with_session(
+                doc! {"uuid": &data.uuid, "created_by": &req_uuid},
+                None,
+                &mut db.session,
+            )
             .await
         {
             group_coll
-                .delete_one(
+                .delete_one_with_session(
                     doc! {"uuid": &data.uuid, "created_by": &req_uuid},
                     None,
+                    &mut db.session,
                 )
                 .await
                 .unwrap();
+            db.session.commit_transaction().await.unwrap();
             Ok((StatusCode::OK, Json(Ok::new())))
         } else {
             Err((

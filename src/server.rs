@@ -4,15 +4,12 @@
 
 use std::net::SocketAddr;
 
-// use axum::extract::ContentLengthLimit;
 use axum::http::header::{self, HeaderValue};
 use axum::http::StatusCode;
 use axum::middleware;
-// use axum::middleware::from_extractor;
 use axum::{
     error_handling::HandleErrorLayer,
     extract::Extension,
-    handler::Handler,
     routing::{delete, get, post},
     Json, Router,
 };
@@ -50,7 +47,7 @@ pub async fn build_server(
 
     let handle: Handle = Handle::new();
 
-    build_workers(db_pool.handle(), config.clone()).await;
+    build_workers(db_pool.handle().await, config.clone()).await;
     tracing::info!("Workers built.");
 
     let app = build_app(config.clone(), db_pool, handle.clone());
@@ -111,11 +108,11 @@ fn build_app(config: IConfig, db_pool: DBPool, handle: Handle) -> Router {
         .route("/update", post(update))
         .route("/view", get(view))
         .layer(service_builder)
-        .fallback(default.into_service())
+        .fallback(default)
 }
 
 fn build_address(address: &str, port: &str) -> SocketAddr {
-    format!("{}:{}", address, port).parse().unwrap()
+    format!("{address}:{port}").parse().unwrap()
 }
 
 async fn build_tls(cert: &str, key: &str) -> RustlsConfig {
@@ -128,12 +125,12 @@ async fn build_tls(cert: &str, key: &str) -> RustlsConfig {
     }
 }
 
-async fn build_workers(db: DBHandle, config: IConfig) {
+async fn build_workers(mut db: DBHandle, config: IConfig) {
     tokio::spawn(async move {
         loop {
             tokio::time::sleep(std::time::Duration::from_secs(1)).await;
             clear_old_locks(
-                &db,
+                &mut db,
                 Duration::seconds(config.settings.queue_timeout_secs),
             )
             .await;
