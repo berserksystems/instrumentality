@@ -1,5 +1,5 @@
-This file serves to document our current test coverage status. The majority of
-our tests are integration tests.
+This file serves to document our current test coverage status. The vast majority
+of our tests are integration tests.
 
 The following is the output of `cargo llvm-cov`, which can be installing by 
 running `cargo install cargo-llvm-cov`.

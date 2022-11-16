@@ -2,9 +2,9 @@ name: Instrumentality Test.
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test-coverage-report ]
   pull_request:
-    branches: [ main ]
+    branches: [ test-coverage-report ]
 
 jobs:
   test:
@@ -27,12 +27,12 @@ jobs:
         mongodb-version: '5.0'
         mongodb-replica-set: rstest
 
-    - name: Create TLS certificates.
+    - name: Create TLS Certificates.
       run: |
           mkdir tls
           openssl req -x509 -newkey rsa:4096 -keyout tls/privkey.pem -out tls/cert.pem -days 365 -nodes -subj '/CN=localhost'
 
-    - name: Create config file.
+    - name: Create Config File.
       run: |
           cp InstrumentalityTestExample.toml InstrumentalityTest.toml
 
@@ -41,3 +41,15 @@ jobs:
       with:
         command: test
         args: --verbose
+
+    - name: Create LLVM Coverage Report.
+      run: |
+          rustup component add llvm-tools-preview
+          cargo install cargo-llvm-cov
+          cargo llvm-cov > COVERAGE
+
+    - name: Artifact LLVM Coverage Report.
+      uses: actions/upload-artifact@v3
+      with:
+        name: Coverage Report
+        path: COVERAGE
