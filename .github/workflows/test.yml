@@ -2,9 +2,9 @@ name: Instrumentality Test.
 
 on:
   push:
-    branches: [ test-coverage-report ]
+    branches: [ main ]
   pull_request:
-    branches: [ test-coverage-report ]
+    branches: [ main ]
 
 jobs:
   test:
