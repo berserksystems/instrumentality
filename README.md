@@ -31,16 +31,18 @@ This is an Axum web server that reads and writes data to MongoDB.
 
 ### Future
 #### Minor
+- [ ] Switch to Diesel.
+- [ ] Response macros.
 - [ ] Live config reloading.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.
 - [ ] Better `/view` query syntax.
-- [ ] Admin tooling.
-- [ ] Channels (groups of groups and subjects.)
-- [ ] Basic analytics & dashboard on `/`.
 
 #### Major
 - [ ] Example front end.
-- [ ] Scalability support.
+- [ ] Analytics and reporting.
+- [ ] Performance profiling and load testing.
+- [ ] Admin tooling.
+- [ ] Organisations (groups of groups and subjects.)
 - [ ] Webhooks.
 - [ ] Handling discrepencies/byzantine platforms through consensus.
