@@ -15,7 +15,7 @@ use mongodb::Collection;
 use crate::config::IConfig;
 use crate::data::{Data, Datas};
 use crate::database::DBHandle;
-use crate::response::{Error, Ok};
+use crate::response::{ErrorResponse, OkResponse};
 use crate::routes::queue;
 use crate::routes::queue::InternalQueueItem;
 use crate::user::User;
@@ -27,31 +27,23 @@ pub async fn add(
     Json(datas): Json<Datas>,
 ) -> impl IntoResponse {
     if datas.data.is_empty() {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new("No data was submitted.")),
-        ));
+        return error!(BAD_REQUEST, "No data was submitted.");
     }
 
     if let Some(queue_id) = datas.queue_id.as_ref() {
         if get_queue_item(queue_id, &user, &mut db).await.is_none() {
-            return Err((
-                StatusCode::BAD_REQUEST,
-                Json(Error::new("Invalid queue ID.")),
-            ));
+            return error!(BAD_REQUEST, "Invalid queue ID.");
         }
     }
 
     match process(datas, &config, &user, &mut db).await {
-        true => Ok((StatusCode::CREATED, Json(Ok::new()))),
-        false => Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new(
-                "No valid data was submitted. Ensure the given platforms and 
-                content/presence types are supported by this server. Ensure all data
-                 was correctly labeled for queue jobs.",
-            )),
-        ))
+        true => ok!(CREATED),
+        false => error!(
+            BAD_REQUEST,
+            "No valid data was submitted. Ensure the given platforms and 
+                content/presence types are supported by this server. Ensure all 
+                data was correctly labeled for queue jobs."
+        ),
     }
 }
 

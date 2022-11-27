@@ -77,7 +77,7 @@ use uuid::Uuid;
 use crate::config::IConfig;
 use crate::data::Data;
 use crate::database::DBHandle;
-use crate::response::{Error, QueueResponse};
+use crate::response::{ErrorResponse, QueueResponse};
 use crate::subject::Subject;
 use crate::user::User;
 use crate::utils::deserialise_array::deserialise_array;
@@ -100,7 +100,7 @@ impl InternalQueueItem {
             queue_id: Uuid::new_v4().to_string(),
             platform_id,
             platform,
-            last_processed: Utc.ymd(1970, 1, 1).and_hms(0, 0, 1),
+            last_processed: Utc.with_ymd_and_hms(1970, 1, 1, 0, 0, 0).unwrap(),
             lock_holder: None,
             lock_acquired_at: None,
             references: 1,
@@ -124,31 +124,25 @@ pub async fn queue(
     queue_query: Option<Query<QueueQuery>>,
 ) -> impl IntoResponse {
     if queue_query.is_none() {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new(
-                "You must provide a list of supported platforms.",
-            )),
-        ));
+        return error!(
+            BAD_REQUEST,
+            "You must provide a list of supported platforms."
+        );
     }
 
     let platforms = &queue_query.unwrap().platforms;
     if platforms.is_empty() {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new(
-                "You must specify which platforms you are performing jobs for.",
-            )),
-        ));
+        return error!(
+            BAD_REQUEST,
+            "You must specify which platforms you are performing jobs for."
+        );
     }
     if platforms.iter().any(|p| !config.valid_platform(p)) {
-        Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new(concat!(
-                "One or more of your given platforms is not valid. ",
-                "See /types for supported platforms.",
-            ))),
-        ))
+        error!(
+            BAD_REQUEST,
+            "One or more of your given platforms is not valid.
+             See /types for supported platforms."
+        )
     } else {
         let filter_builder = FindOneAndUpdateOptions::builder()
             .sort(doc! {"last_processed": -1_i32});
@@ -179,22 +173,17 @@ pub async fn queue(
             .await;
 
             db.session.commit_transaction().await.unwrap();
-            Ok((
-                StatusCode::OK,
-                Json(QueueResponse::new(
+            ok!(
+                OK,
+                QueueResponse::new(
                     queue_item.queue_id,
                     queue_item.platform,
                     queue_item.platform_id,
                     username_hint,
-                )),
-            ))
+                )
+            )
         } else {
-            Err((
-                StatusCode::OK,
-                Json(Error::new(
-                    "There are no jobs available. Please try again later.",
-                )),
-            ))
+            error!(OK, "There are no jobs available. Please try again later.")
         }
     }
 }

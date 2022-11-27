@@ -19,7 +19,7 @@ use crate::common::create_mock_presence;
 async fn queue_entry_created() {
     use std::collections::HashMap;
 
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -53,12 +53,12 @@ async fn queue_entry_created() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -94,7 +94,7 @@ async fn queue_entry_created() {
 async fn queue_entry_created_alternate_syntax() {
     use std::collections::HashMap;
 
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -128,12 +128,12 @@ async fn queue_entry_created_alternate_syntax() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -171,8 +171,8 @@ async fn queue_entry_created_alternate_syntax() {
 async fn queue_locks_entry() {
     use std::collections::HashMap;
 
-    use instrumentality::response::Error;
-    use instrumentality::response::Ok;
+    use instrumentality::response::ErrorResponse;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -206,12 +206,12 @@ async fn queue_locks_entry() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -252,7 +252,7 @@ async fn queue_locks_entry() {
     assert_eq!(res.status(), StatusCode::OK);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let er: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(er.response, "ERROR".to_string());
     assert_eq!(
@@ -276,7 +276,7 @@ async fn queue_add_unlocks_entry() {
     use std::collections::HashMap;
 
     use instrumentality::data::Datas;
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -310,12 +310,12 @@ async fn queue_add_unlocks_entry() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -367,9 +367,9 @@ async fn queue_add_unlocks_entry() {
     assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let ok: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(ok.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -413,7 +413,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
 
     use instrumentality::data::Data;
     use instrumentality::data::Datas;
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -448,12 +448,12 @@ async fn queue_add_meta_data_modifies_platform_id() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -526,9 +526,9 @@ async fn queue_add_meta_data_modifies_platform_id() {
     assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let ok: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(ok.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app
@@ -567,7 +567,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
 async fn queue_lock_times_out() {
     use std::collections::HashMap;
 
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -601,12 +601,12 @@ async fn queue_lock_times_out() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let res = env
         .app

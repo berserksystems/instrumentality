@@ -5,10 +5,10 @@ use axum::{
     Json,
 };
 
-use crate::response::Error;
+use crate::response::ErrorResponse;
 
 pub async fn default() -> impl IntoResponse {
-    (StatusCode::NOT_FOUND, Json(Error::new("Not found.")))
+    response!(NOT_FOUND, ErrorResponse::from_text("Not found."))
 }
 
 pub async fn error_transformer<B>(
@@ -18,18 +18,13 @@ pub async fn error_transformer<B>(
     let resp = next.run(req).await;
     let status = resp.status();
     match status {
-        StatusCode::METHOD_NOT_ALLOWED => Err((
-            StatusCode::METHOD_NOT_ALLOWED,
-            Json(Error::new("Method not allowed.")),
-        )
-            .into_response()),
-        StatusCode::UNPROCESSABLE_ENTITY => Err((
-            StatusCode::UNPROCESSABLE_ENTITY,
-            Json(Error::new(
-                "Your data is missing a field or is otherwise unprocessable.",
-            )),
-        )
-            .into_response()),
+        StatusCode::METHOD_NOT_ALLOWED => {
+            error!(METHOD_NOT_ALLOWED, "Method not allowed.")
+        }
+        StatusCode::UNPROCESSABLE_ENTITY => error!(
+            UNPROCESSABLE_ENTITY,
+            "The given data is missing a field or is otherwise unprocessable."
+        ),
         _ => Ok(resp),
     }
 }

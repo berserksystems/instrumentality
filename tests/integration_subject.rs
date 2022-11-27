@@ -15,7 +15,7 @@ async fn subject_creation() {
     use std::collections::HashMap;
 
     use instrumentality::response::LoginResponse;
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::routes::create::CreateData;
 
     const USERNAME: &str = "TEST_USER_1";
@@ -50,12 +50,12 @@ async fn subject_creation() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let lr: LoginResponse = env.login().await;
 
@@ -76,7 +76,7 @@ async fn subject_creation() {
 async fn subject_bad_key_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
     use instrumentality::routes::create::CreateData;
 
     const USERNAME: &str = "TEST_USER_1";
@@ -115,9 +115,9 @@ async fn subject_bad_key_creation() {
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
 
     env.cleanup().await;
 }
@@ -132,7 +132,7 @@ async fn subject_deletion() {
     use std::collections::HashMap;
 
     use instrumentality::response::LoginResponse;
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::routes::create::CreateData;
     use instrumentality::routes::delete::DeleteData;
 
@@ -168,12 +168,12 @@ async fn subject_deletion() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let lr: LoginResponse = env.login().await;
     let uuid = lr.subjects[0].uuid.clone();
@@ -226,7 +226,7 @@ async fn subject_update() {
     use std::collections::HashMap;
 
     use instrumentality::response::LoginResponse;
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::routes::create::CreateData;
     use instrumentality::routes::update::UpdateData;
 
@@ -267,12 +267,12 @@ async fn subject_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let lr: LoginResponse = env.login().await;
     let uuid = lr.subjects[0].uuid.clone();
@@ -347,7 +347,7 @@ async fn subject_update() {
 async fn subject_bad_platform_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
     use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -385,9 +385,9 @@ async fn subject_bad_platform_creation() {
     assert_eq!(res.status(), StatusCode::BAD_REQUEST);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
 
     let lr: LoginResponse = env.login().await;
 

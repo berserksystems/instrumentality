@@ -15,7 +15,7 @@ use axum::body::Body;
 use axum::http::Method;
 use axum::http::Request;
 use axum::http::StatusCode;
-use axum::RouterService;
+use axum::Router;
 use axum_server::Handle;
 use chrono::Utc;
 use instrumentality::config;
@@ -31,7 +31,7 @@ use uuid::Uuid;
 pub const TEST_ENVIRONMENT_CONFIG: &str = "InstrumentalityTest.toml";
 
 pub struct Environment {
-    pub app: RouterService,
+    pub app: Router,
     pub user: User,
     pub config: IConfig,
     pub handle: Handle,
@@ -48,7 +48,6 @@ impl Environment {
         let test_db_id = Uuid::new_v4().to_string();
         config.mongodb.database = test_db_id.clone();
         let (app, _, _, handle) = server::build_server(&config).await;
-        let app = app.into_service();
 
         let user = User::new("test");
         Self::inject_account(&config, &user).await;

@@ -7,11 +7,11 @@ use common::Environment;
 use tower::Service;
 
 /// catcher_404 tests:
-/// - Instrumentality serves a NOT FOUND error to a request to an invalid
-///   route i.e. (/404)
+/// - Instrumentality serves a NOT FOUND error to a request to an invalid route
+///   i.e. (/404)
 #[tokio::test]
 async fn catcher_404() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     let mut env: Environment = Environment::default().await;
 
@@ -30,7 +30,7 @@ async fn catcher_404() {
     assert_eq!(res.status(), StatusCode::NOT_FOUND);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let er: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(er.response, "ERROR".to_string());
 

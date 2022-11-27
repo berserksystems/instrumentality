@@ -1,14 +1,14 @@
 //! Error responses.
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize)]
-pub struct Error {
+#[derive(Serialize, Deserialize)]
+pub struct ErrorResponse {
     pub response: String,
     pub text: String,
 }
 
-impl Error {
-    pub fn new(text: &str) -> Self {
+impl ErrorResponse {
+    pub fn from_text(text: &str) -> Self {
         Self {
             response: "ERROR".to_string(),
             text: text.to_string(),
@@ -17,21 +17,15 @@ impl Error {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct Ok {
+pub struct OkResponse {
     pub response: String,
 }
 
-impl Ok {
+impl OkResponse {
     pub fn new() -> Self {
         Self {
             response: "OK".to_string(),
         }
-    }
-}
-
-impl Default for Ok {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -77,13 +71,13 @@ impl QueueResponse {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct RegisterResponse {
+pub struct UserResponse {
     pub response: String,
     pub user: crate::user::User,
 }
 
-impl RegisterResponse {
-    pub fn new(user: crate::user::User) -> Self {
+impl UserResponse {
+    pub fn from_user(user: crate::user::User) -> Self {
         Self {
             response: "OK".to_string(),
             user,
@@ -98,7 +92,7 @@ pub struct ViewResponse {
 }
 
 impl ViewResponse {
-    pub fn new(view_data: crate::routes::view::ViewData) -> Self {
+    pub fn from_view_data(view_data: crate::routes::view::ViewData) -> Self {
         Self {
             response: "OK".to_string(),
             view_data,
@@ -114,7 +108,7 @@ pub struct TypesResponse {
 }
 
 impl TypesResponse {
-    pub fn new(
+    pub fn from_types(
         content_types: std::collections::HashMap<String, Vec<String>>,
         presence_types: std::collections::HashMap<String, Vec<String>>,
     ) -> Self {
@@ -129,14 +123,14 @@ impl TypesResponse {
 #[derive(Deserialize, Serialize)]
 pub struct ResetResponse {
     pub response: String,
-    pub new_key: String,
+    pub key: String,
 }
 
 impl ResetResponse {
-    pub fn new(new_key: String) -> Self {
+    pub fn from_key(key: String) -> Self {
         Self {
             response: "OK".to_string(),
-            new_key,
+            key,
         }
     }
 }
@@ -150,7 +144,7 @@ pub struct LoginResponse {
 }
 
 impl LoginResponse {
-    pub fn new(
+    pub fn from_user_data(
         user: crate::user::User,
         subjects: Vec<crate::subject::Subject>,
         groups: Vec<crate::group::Group>,
@@ -171,10 +165,34 @@ pub struct CreateResponse {
 }
 
 impl CreateResponse {
-    pub fn new(uuid: &str) -> Self {
+    pub fn from_uuid(uuid: &str) -> Self {
         Self {
             response: "OK".to_string(),
             uuid: uuid.to_string(),
         }
     }
+}
+
+macro_rules! ok {
+    () => {
+        ok!(OK)
+    };
+    ($code:ident) => {
+        Ok(response!($code, OkResponse::new()))
+    };
+    ($code:ident, $response:expr) => {
+        Ok(response!($code, $response))
+    };
+}
+
+macro_rules! error {
+    ($code:ident, $text:expr) => {
+        Err(response!($code, ErrorResponse::from_text($text)))
+    };
+}
+
+macro_rules! response {
+    ($code:ident, $response: expr) => {
+        (StatusCode::$code, Json($response))
+    };
 }

@@ -50,7 +50,7 @@ async fn group_creation() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -94,7 +94,7 @@ async fn group_creation() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
@@ -152,7 +152,7 @@ async fn group_bad_key_creation() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -257,7 +257,7 @@ async fn group_deletion() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -301,7 +301,7 @@ async fn group_deletion() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
@@ -399,7 +399,7 @@ async fn group_subject_deletion() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -443,7 +443,7 @@ async fn group_subject_deletion() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
@@ -535,7 +535,7 @@ async fn group_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -579,7 +579,7 @@ async fn group_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
@@ -621,7 +621,7 @@ async fn group_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
@@ -716,7 +716,7 @@ async fn group_bad_uuid_creation() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -822,7 +822,7 @@ async fn group_bad_uuid_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let cr: CreateResponse = serde_json::from_slice(&body).unwrap();
@@ -866,7 +866,7 @@ async fn group_bad_uuid_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
@@ -908,7 +908,7 @@ async fn group_bad_uuid_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 

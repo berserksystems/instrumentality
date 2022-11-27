@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
 use crate::group::Group;
-use crate::response::{Error, Ok};
+use crate::response::{ErrorResponse, OkResponse};
 use crate::routes::queue;
 use crate::subject::*;
 use crate::user::User;
@@ -55,7 +55,7 @@ async fn update_subject(
     data: &UpdateData,
     db: &mut DBHandle,
     user: &User,
-) -> Result<(StatusCode, Json<Ok>), (StatusCode, Json<Error>)> {
+) -> Result<(StatusCode, Json<OkResponse>), (StatusCode, Json<ErrorResponse>)> {
     let (uuid, name, profiles, description) = match data {
         UpdateData::UpdateSubject {
             uuid,
@@ -118,14 +118,12 @@ async fn update_subject(
             .await
             .unwrap();
         db.session.commit_transaction().await.unwrap();
-        Ok((StatusCode::OK, Json(Ok::new())))
+        ok!()
     } else {
-        Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new(
-                "Subject does not exist or was not created by you.",
-            )),
-        ))
+        error!(
+            BAD_REQUEST,
+            "Subject does not exist or was not created by you."
+        )
     }
 }
 
@@ -133,7 +131,7 @@ async fn update_group(
     data: &UpdateData,
     db: &mut DBHandle,
     user: &User,
-) -> Result<(StatusCode, Json<Ok>), (StatusCode, Json<Error>)> {
+) -> Result<(StatusCode, Json<OkResponse>), (StatusCode, Json<ErrorResponse>)> {
     let (uuid, name, subjects, description) = match data {
         UpdateData::UpdateGroup {
             uuid,
@@ -160,12 +158,10 @@ async fn update_group(
                 .await
                 .unwrap();
             if subject.is_none() {
-                return Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(Error::new(
-                        "One or more of the subjects does not exist.",
-                    )),
-                ));
+                return error!(
+                    BAD_REQUEST,
+                    "One or more of the subjects does not exist."
+                );
             }
         }
         group_coll
@@ -182,13 +178,11 @@ async fn update_group(
             .await
             .unwrap();
         db.session.commit_transaction().await.unwrap();
-        Ok((StatusCode::OK, Json(Ok::new())))
+        ok!()
     } else {
-        Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new(
-                "Group does not exist or was not created by you.",
-            )),
-        ))
+        error!(
+            BAD_REQUEST,
+            "Group does not exist or was not created by you."
+        )
     }
 }

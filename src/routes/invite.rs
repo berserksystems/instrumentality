@@ -14,7 +14,7 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
-use crate::response::{Error, InviteResponse};
+use crate::response::{ErrorResponse, InviteResponse};
 use crate::user::User;
 
 pub struct InviteError;
@@ -53,7 +53,8 @@ impl Referral {
 pub async fn invite(
     user: User,
     mut db: DBHandle,
-) -> Result<(StatusCode, Json<InviteResponse>), (StatusCode, Json<Error>)> {
+) -> Result<(StatusCode, Json<InviteResponse>), (StatusCode, Json<ErrorResponse>)>
+{
     let referral = Referral::new(user.uuid);
     let refer_coll: Collection<Referral> = db.collection("referrals");
     refer_coll
@@ -62,7 +63,7 @@ pub async fn invite(
         .unwrap();
 
     db.session.commit_transaction().await.unwrap();
-    Ok((StatusCode::OK, Json(InviteResponse::new(referral.code))))
+    ok!(CREATED, InviteResponse::new(referral.code))
 }
 
 #[cfg(test)]

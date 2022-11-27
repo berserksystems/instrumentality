@@ -18,7 +18,7 @@ use uuid::Uuid;
 use crate::database::DBHandle;
 use crate::database::DBPool;
 use crate::group::Group;
-use crate::response::Error;
+use crate::response::ErrorResponse;
 use crate::subject::Subject;
 
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
@@ -123,18 +123,18 @@ where
 
                 match user {
                     Some(user) => Ok(user),
-                    _ => Err((
-                        StatusCode::UNAUTHORIZED,
-                        Json(Error::new("Unauthorized.")),
+                    _ => Err(response!(
+                        UNAUTHORIZED,
+                        ErrorResponse::from_text("Unauthorised.")
                     )
-                        .into_response()),
+                    .into_response()),
                 }
             }
-            None => Err((
-                StatusCode::UNAUTHORIZED,
-                Json(Error::new("Unauthorized.")),
+            None => Err(response!(
+                UNAUTHORIZED,
+                ErrorResponse::from_text("Unauthorised.")
             )
-                .into_response()),
+            .into_response()),
         }
     }
 }

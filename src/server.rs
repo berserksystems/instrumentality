@@ -25,7 +25,7 @@ use crate::config::IConfig;
 use crate::database;
 use crate::database::DBHandle;
 use crate::database::DBPool;
-use crate::response::Error;
+use crate::response::ErrorResponse;
 use crate::routes::add::*;
 use crate::routes::create::*;
 use crate::routes::default::*;
@@ -73,12 +73,9 @@ fn build_app(config: IConfig, db_pool: DBPool, handle: Handle) -> Router {
         .layer(middleware::from_fn(error_transformer))
         .layer(HandleErrorLayer::new(|error: BoxError| async move {
             if error.is::<tower::timeout::error::Elapsed>() {
-                Ok(StatusCode::REQUEST_TIMEOUT)
+                ok!(REQUEST_TIMEOUT, "Request timed out.")
             } else {
-                Err((
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(Error::new("Internal server error.")),
-                ))
+                error!(INTERNAL_SERVER_ERROR, "Internal server error.")
             }
         }))
         .layer(Extension(config))

@@ -12,8 +12,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
 use crate::group::Group;
-use crate::response::Error;
-use crate::response::Ok;
+use crate::response::ErrorResponse;
+use crate::response::OkResponse;
 use crate::routes::queue;
 use crate::subject::*;
 use crate::user::User;
@@ -67,12 +67,9 @@ pub async fn delete(
             }
 
             db.session.commit_transaction().await.unwrap();
-            Ok((StatusCode::OK, Json(Ok::new())))
+            ok!()
         } else {
-            Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(Error::new("Internal server error.")),
-            ))
+            error!(INTERNAL_SERVER_ERROR, "Internal server error.")
         }
     } else {
         let group_coll: Collection<Group> = db.collection("groups");
@@ -93,15 +90,13 @@ pub async fn delete(
                 .await
                 .unwrap();
             db.session.commit_transaction().await.unwrap();
-            Ok((StatusCode::OK, Json(Ok::new())))
+            ok!()
         } else {
-            Err((
-                StatusCode::BAD_REQUEST,
-                Json(Error::new(
-                    "No such group or subject exists or it was
-                 not created by the user with the given key.",
-                )),
-            ))
+            error!(
+                BAD_REQUEST,
+                "No such group or subject exists or it was
+            not created by the user with the given key."
+            )
         }
     }
 }
