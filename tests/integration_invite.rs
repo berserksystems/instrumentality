@@ -34,7 +34,7 @@ async fn invite() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let ir: InviteResponse = serde_json::from_slice(&body).unwrap();
@@ -53,7 +53,7 @@ async fn invite() {
 /// - Returns JSON explaining error.
 #[tokio::test]
 async fn invite_bad_key() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     const INVALID_API_KEY: &str = "INVALID_API_KEY";
 
@@ -75,9 +75,9 @@ async fn invite_bad_key() {
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
 
     env.cleanup().await;
 }

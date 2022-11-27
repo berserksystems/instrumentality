@@ -19,7 +19,7 @@ use tower::Service;
 async fn register_with_invite() {
     use instrumentality::response::InviteResponse;
     use instrumentality::response::LoginResponse;
-    use instrumentality::response::RegisterResponse;
+    use instrumentality::response::UserResponse;
     use instrumentality::routes::register::RegisterRequest;
 
     const USERNAME: &str = "TEST_USER_1";
@@ -39,7 +39,7 @@ async fn register_with_invite() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
     let ir: InviteResponse = serde_json::from_slice(&body).unwrap();
@@ -73,7 +73,7 @@ async fn register_with_invite() {
         .unwrap();
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let rr: RegisterResponse = serde_json::from_slice(&body).unwrap();
+    let rr: UserResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(rr.response, "OK".to_string());
     assert_eq!(rr.user.name, USERNAME.to_string());
@@ -115,7 +115,7 @@ async fn register_with_invite() {
 /// - Login route called with created user's key is OK and has correct name.
 #[tokio::test]
 async fn register_bad_invite_code() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
     use instrumentality::routes::register::RegisterRequest;
 
     const USERNAME: &str = "TEST_USER_1";
@@ -148,9 +148,9 @@ async fn register_bad_invite_code() {
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
 
     env.cleanup().await;
 }

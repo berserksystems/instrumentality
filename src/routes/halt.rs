@@ -14,7 +14,7 @@ use axum::response::Response;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use axum_server::Handle;
 
-use crate::response::{Error, Ok};
+use crate::response::{ErrorResponse, OkResponse};
 use crate::user::User;
 
 pub async fn halt(
@@ -25,9 +25,9 @@ pub async fn halt(
         server_handle
             .handle
             .graceful_shutdown(Duration::from_secs(5).into());
-        Ok((StatusCode::OK, Json(Ok::new())))
+        ok!()
     } else {
-        Err((StatusCode::UNAUTHORIZED, Json(Error::new("Unauthorized."))))
+        error!(UNAUTHORIZED, "Unauthorised.")
     }
 }
 

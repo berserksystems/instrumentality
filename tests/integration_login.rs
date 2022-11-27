@@ -32,7 +32,7 @@ async fn login() {
 /// - Authentication without a X-API-KEY header returns not authorised.
 #[tokio::test]
 async fn login_no_key() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     let mut env: Environment = Environment::default().await;
 
@@ -51,7 +51,7 @@ async fn login_no_key() {
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let er: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(er.response, "ERROR".to_string());
 
@@ -62,7 +62,7 @@ async fn login_no_key() {
 /// - Authentication without a X-API-KEY header returns not authorised.
 #[tokio::test]
 async fn login_bad_key() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     const INVALID_API_KEY: &str = "INVALID_API_KEY";
 
@@ -84,7 +84,7 @@ async fn login_bad_key() {
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let er: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(er.response, "ERROR".to_string());
 

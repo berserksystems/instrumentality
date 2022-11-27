@@ -17,7 +17,7 @@ use uuid::Uuid;
 ///     - an OK.
 #[tokio::test]
 async fn add() {
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -49,9 +49,9 @@ async fn add() {
     assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let ok: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(ok.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
     env.cleanup().await;
 }
 
@@ -61,7 +61,7 @@ async fn add() {
 ///     - an OK.
 #[tokio::test]
 async fn add_multiple() {
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -96,9 +96,9 @@ async fn add_multiple() {
     assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let ok: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(ok.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
     env.cleanup().await;
 }
 
@@ -106,7 +106,7 @@ async fn add_multiple() {
 /// - Authentication of the test user fails with an invalid key.
 #[tokio::test]
 async fn add_bad_key() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -139,9 +139,9 @@ async fn add_bad_key() {
     assert_eq!(res.status(), StatusCode::UNAUTHORIZED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
     env.cleanup().await;
 }
 
@@ -149,7 +149,7 @@ async fn add_bad_key() {
 /// - Adding data fails when an invalid queue ID is provided.
 #[tokio::test]
 async fn add_bad_queue_id() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -182,9 +182,9 @@ async fn add_bad_queue_id() {
     assert_eq!(res.status(), StatusCode::BAD_REQUEST);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
     env.cleanup().await;
 }
 
@@ -192,7 +192,7 @@ async fn add_bad_queue_id() {
 /// - Adding data fails when no data is provided.
 #[tokio::test]
 async fn add_empty_data() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     let mut env = Environment::default().await;
 
@@ -221,9 +221,9 @@ async fn add_empty_data() {
     assert_eq!(res.status(), StatusCode::BAD_REQUEST);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let e: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(e.response, "ERROR".to_string());
+    assert_eq!(er.response, "ERROR".to_string());
     env.cleanup().await;
 }
 

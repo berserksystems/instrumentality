@@ -9,7 +9,7 @@ use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
 
 use crate::database::DBHandle;
-use crate::response::{Error, ResetResponse};
+use crate::response::{ErrorResponse, ResetResponse};
 use crate::user::User;
 
 pub async fn reset(user: User, mut db: DBHandle) -> impl IntoResponse {
@@ -26,13 +26,10 @@ pub async fn reset(user: User, mut db: DBHandle) -> impl IntoResponse {
         .unwrap();
     let result = db.session.commit_transaction().await;
     match result {
-        Ok(_) => Ok((StatusCode::OK, Json(ResetResponse::new(new_key)))),
-        _ => Err((
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(Error::new(
-                "Could not reset key. Your key remains the same. 
-                    Please try again.",
-            )),
-        )),
+        Ok(_) => ok!(OK, ResetResponse::from_key(new_key)),
+        _ => error!(
+            INTERNAL_SERVER_ERROR,
+            "Could not reset key. Your key remains the same. Please try again."
+        ),
     }
 }

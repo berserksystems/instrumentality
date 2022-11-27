@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::Data;
 use crate::database::DBHandle;
-use crate::response::{Error, ViewResponse};
+use crate::response::{ErrorResponse, ViewResponse};
 use crate::subject::Subject;
 use crate::user::User;
 use crate::utils::deserialise_array::deserialise_array;
@@ -90,12 +90,10 @@ pub async fn view(
     view_query: Option<Query<ViewQuery>>,
     mut db: DBHandle,
     _user: User,
-) -> Result<(StatusCode, Json<ViewResponse>), (StatusCode, Json<Error>)> {
+) -> Result<(StatusCode, Json<ViewResponse>), (StatusCode, Json<ErrorResponse>)>
+{
     if view_query.is_none() {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new("You must provide a list of subjects.")),
-        ));
+        return error!(BAD_REQUEST, "You must provide a list of subjects.");
     }
 
     let subjects = &view_query.unwrap().subjects;
@@ -185,5 +183,5 @@ pub async fn view(
     }
 
     db.session.commit_transaction().await.unwrap();
-    Ok((StatusCode::OK, Json(ViewResponse::new(view_data))))
+    ok!(OK, ViewResponse::from_view_data(view_data))
 }

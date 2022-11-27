@@ -17,7 +17,7 @@ async fn view() {
 
     use instrumentality::data::Datas;
     use instrumentality::response::LoginResponse;
-    use instrumentality::response::Ok;
+    use instrumentality::response::OkResponse;
     use instrumentality::response::ViewResponse;
     use instrumentality::routes::create::CreateData;
 
@@ -51,12 +51,12 @@ async fn view() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let or: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(or.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let datas = Datas {
         queue_id: None,
@@ -83,9 +83,9 @@ async fn view() {
     assert_eq!(res.status(), StatusCode::CREATED);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let ok: Ok = serde_json::from_slice(&body).unwrap();
+    let okr: OkResponse = serde_json::from_slice(&body).unwrap();
 
-    assert_eq!(ok.response, "OK".to_string());
+    assert_eq!(okr.response, "OK".to_string());
 
     let lr: LoginResponse = env.login().await;
     let uuid = lr.subjects[0].uuid.clone();
@@ -119,7 +119,7 @@ async fn view() {
 ///   arguments.
 #[tokio::test]
 async fn view_no_subjects() {
-    use instrumentality::response::Error;
+    use instrumentality::response::ErrorResponse;
 
     let mut env = Environment::default().await;
 
@@ -139,7 +139,7 @@ async fn view_no_subjects() {
     assert_eq!(res.status(), StatusCode::BAD_REQUEST);
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let er: Error = serde_json::from_slice(&body).unwrap();
+    let er: ErrorResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(er.response, "ERROR");
 

@@ -11,7 +11,7 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
-use crate::response::{Error, RegisterResponse};
+use crate::response::{ErrorResponse, UserResponse};
 use crate::routes::invite::Referral;
 use crate::user::User;
 
@@ -31,18 +31,12 @@ pub async fn register(
     Json(req): Json<RegisterRequest>,
 ) -> impl IntoResponse {
     if !username_available(&req, &mut db).await {
-        return Err((
-            StatusCode::BAD_REQUEST,
-            Json(Error::new("This username is taken.")),
-        ));
+        return error!(BAD_REQUEST, "This username is taken.");
     }
     let result = register_user(&req, &mut db).await;
     match result {
-        Ok(user) => Ok((StatusCode::OK, Json(RegisterResponse::new(user)))),
-        Err(_) => Err((
-            StatusCode::UNAUTHORIZED,
-            Json(Error::new("Invalid invite code.")),
-        )),
+        Ok(user) => ok!(CREATED, UserResponse::from_user(user)),
+        Err(_) => error!(UNAUTHORIZED, "Invalid invite code."),
     }
 }
 

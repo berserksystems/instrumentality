@@ -18,7 +18,7 @@ use uuid::Uuid;
 use crate::config::IConfig;
 use crate::database::DBHandle;
 use crate::group::Group;
-use crate::response::{CreateResponse, Error};
+use crate::response::{CreateResponse, ErrorResponse};
 use crate::routes::queue;
 use crate::subject::*;
 use crate::user::User;
@@ -49,15 +49,11 @@ pub async fn create(
             let subj_coll: Collection<Subject> = db.collection("subjects");
             if let Some(subject) = subject_from_create(data, user).await {
                 for platform in subject.profiles.keys() {
-                    if config.content_types.get(platform).is_none()
-                        && config.presence_types.get(platform).is_none()
-                    {
-                        return Err((
-                            StatusCode::BAD_REQUEST,
-                            Json(Error::new(
-                                "Profiles contains unsupported platform(s).",
-                            )),
-                        ));
+                    if !config.valid_platform(platform) {
+                        return error!(
+                            BAD_REQUEST,
+                            "Profiles contains unsupported platform(s)."
+                        );
                     }
                 }
                 subj_coll
@@ -71,23 +67,15 @@ pub async fn create(
                                 .await;
                         }
                     }
-                    Ok((
-                        StatusCode::OK,
-                        Json(CreateResponse::new(&subject.uuid)),
-                    ))
+                    ok!(CREATED, CreateResponse::from_uuid(&subject.uuid))
                 } else {
-                    Err((
-                        StatusCode::CONFLICT,
-                        Json(Error::new(
-                            "Subject by that name already exists.",
-                        )),
-                    ))
+                    error!(CONFLICT, "Subject by that name already exists.")
                 }
             } else {
-                Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(Error::new("Subject couldn't be created from data.")),
-                ))
+                error!(
+                    BAD_REQUEST,
+                    "Subject couldn't be created from the given data."
+                )
             }
         }
 
@@ -105,12 +93,10 @@ pub async fn create(
                         .await
                         .unwrap();
                     if subject.is_none() {
-                        return Err((
-                            StatusCode::BAD_REQUEST,
-                            Json(Error::new(
-                                "One or more of the subjects does not exist.",
-                            )),
-                        ));
+                        return error!(
+                            BAD_REQUEST,
+                            "One or more of the subjects does not exist."
+                        );
                     }
                 }
                 group_coll
@@ -119,18 +105,12 @@ pub async fn create(
                     .unwrap();
 
                 if db.session.commit_transaction().await.is_ok() {
-                    Ok((StatusCode::OK, Json(CreateResponse::new(&group.uuid))))
+                    ok!(CREATED, CreateResponse::from_uuid(&group.uuid))
                 } else {
-                    Err((
-                        StatusCode::CONFLICT,
-                        Json(Error::new("Group by that name already exists.")),
-                    ))
+                    error!(CONFLICT, "Group by that name already exists.")
                 }
             } else {
-                Err((
-                    StatusCode::BAD_REQUEST,
-                    Json(Error::new("Group couldn't be created from data.")),
-                ))
+                error!(BAD_REQUEST, "Group couldn't be created from data.")
             }
         }
     }

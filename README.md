@@ -32,7 +32,6 @@ This is an Axum web server that reads and writes data to MongoDB.
 ### Future
 #### Minor
 - [ ] Switch to Diesel.
-- [ ] Response macros.
 - [ ] Live config reloading.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.

@@ -41,15 +41,15 @@ async fn reset() {
     assert_eq!(rr.response, "OK".to_string());
 
     let re = regex::Regex::new(r"^([A-F0-9])*$").unwrap();
-    assert!(rr.new_key.len() == 64);
-    assert!(re.is_match(&rr.new_key));
+    assert!(rr.key.len() == 64);
+    assert!(re.is_match(&rr.key));
 
     let res = env
         .app
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &rr.new_key)
+                .header("X-API-KEY", &rr.key)
                 .uri("/login")
                 .body(Body::empty())
                 .unwrap(),
