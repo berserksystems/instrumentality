@@ -16,7 +16,7 @@ impl ErrorResponse {
     }
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Default)]
 pub struct OkResponse {
     pub response: String,
 }
