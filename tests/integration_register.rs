@@ -17,10 +17,10 @@ use tower::Service;
 /// - Login route called with created user's key is OK and has correct name.
 #[tokio::test]
 async fn register_with_invite() {
-    use instrumentality::response::InviteResponse;
-    use instrumentality::response::LoginResponse;
-    use instrumentality::response::UserResponse;
     use instrumentality::routes::register::RegisterRequest;
+    use instrumentality::routes::response::InviteResponse;
+    use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::response::UserResponse;
 
     const USERNAME: &str = "TEST_USER_1";
 
@@ -115,8 +115,8 @@ async fn register_with_invite() {
 /// - Login route called with created user's key is OK and has correct name.
 #[tokio::test]
 async fn register_bad_invite_code() {
-    use instrumentality::response::ErrorResponse;
     use instrumentality::routes::register::RegisterRequest;
+    use instrumentality::routes::response::ErrorResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const INVALID_INVITE_CODE: &str = "INVALID_INVITE_CODE";

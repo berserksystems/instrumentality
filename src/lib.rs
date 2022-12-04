@@ -21,7 +21,6 @@ pub mod data;
 pub mod database;
 pub mod group;
 #[macro_use]
-pub mod response;
 pub mod routes;
 pub mod server;
 pub mod subject;

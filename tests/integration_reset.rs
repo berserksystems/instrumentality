@@ -15,8 +15,8 @@ use tower::Service;
 /// - Then a test login to determine that the key was actually reset.
 #[tokio::test]
 async fn reset() {
-    use instrumentality::response::LoginResponse;
-    use instrumentality::response::ResetResponse;
+    use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::response::ResetResponse;
 
     let mut env: Environment = Environment::default().await;
 

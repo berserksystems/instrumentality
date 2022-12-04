@@ -5,7 +5,7 @@ use axum::{
     Json,
 };
 
-use crate::response::ErrorResponse;
+use crate::routes::response::ErrorResponse;
 
 pub async fn default() -> impl IntoResponse {
     response!(NOT_FOUND, ErrorResponse::from_text("Not found."))

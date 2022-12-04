@@ -9,7 +9,7 @@ use axum::Extension;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 
 use crate::config::IConfig;
-use crate::response::TypesResponse;
+use crate::routes::response::TypesResponse;
 
 pub async fn types(Extension(config): Extension<IConfig>) -> impl IntoResponse {
     let tr =

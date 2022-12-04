@@ -17,7 +17,7 @@ use tower::Service;
 /// invite -> register.
 #[tokio::test]
 async fn invite() {
-    use instrumentality::response::InviteResponse;
+    use instrumentality::routes::response::InviteResponse;
 
     let mut env: Environment = Environment::default().await;
 
@@ -53,7 +53,7 @@ async fn invite() {
 /// - Returns JSON explaining error.
 #[tokio::test]
 async fn invite_bad_key() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     const INVALID_API_KEY: &str = "INVALID_API_KEY";
 

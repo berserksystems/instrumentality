@@ -8,7 +8,7 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
 
 use crate::database::DBHandle;
-use crate::response::LoginResponse;
+use crate::routes::response::LoginResponse;
 use crate::user::User;
 
 pub async fn login(user: User, mut db: DBHandle) -> impl IntoResponse {

@@ -12,9 +12,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
 use crate::group::Group;
-use crate::response::ErrorResponse;
-use crate::response::OkResponse;
 use crate::routes::queue;
+use crate::routes::response::ErrorResponse;
+use crate::routes::response::OkResponse;
 use crate::subject::*;
 use crate::user::User;
 

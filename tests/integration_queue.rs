@@ -19,9 +19,9 @@ use crate::common::create_mock_presence;
 async fn queue_entry_created() {
     use std::collections::HashMap;
 
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::QueueResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -94,9 +94,9 @@ async fn queue_entry_created() {
 async fn queue_entry_created_alternate_syntax() {
     use std::collections::HashMap;
 
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::QueueResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -171,10 +171,10 @@ async fn queue_entry_created_alternate_syntax() {
 async fn queue_locks_entry() {
     use std::collections::HashMap;
 
-    use instrumentality::response::ErrorResponse;
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::ErrorResponse;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::QueueResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -276,9 +276,9 @@ async fn queue_add_unlocks_entry() {
     use std::collections::HashMap;
 
     use instrumentality::data::Datas;
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::QueueResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -413,9 +413,9 @@ async fn queue_add_meta_data_modifies_platform_id() {
 
     use instrumentality::data::Data;
     use instrumentality::data::Datas;
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::QueueResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -567,9 +567,9 @@ async fn queue_add_meta_data_modifies_platform_id() {
 async fn queue_lock_times_out() {
     use std::collections::HashMap;
 
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::QueueResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::QueueResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";

@@ -11,7 +11,7 @@ use tower::Service;
 ///   i.e. (/404)
 #[tokio::test]
 async fn catcher_404() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     let mut env: Environment = Environment::default().await;
 

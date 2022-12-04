@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::data::Data;
 use crate::database::DBHandle;
-use crate::response::{ErrorResponse, ViewResponse};
+use crate::routes::response::{ErrorResponse, ViewResponse};
 use crate::subject::Subject;
 use crate::user::User;
 use crate::utils::deserialise_array::deserialise_array;

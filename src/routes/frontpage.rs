@@ -7,7 +7,7 @@
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 
-use crate::response::OkResponse;
+use crate::routes::response::OkResponse;
 
 pub async fn frontpage() -> impl IntoResponse {
     response!(OK, OkResponse::new())

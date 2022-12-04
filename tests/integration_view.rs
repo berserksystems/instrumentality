@@ -16,10 +16,10 @@ async fn view() {
     use std::collections::HashMap;
 
     use instrumentality::data::Datas;
-    use instrumentality::response::LoginResponse;
-    use instrumentality::response::OkResponse;
-    use instrumentality::response::ViewResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::response::ViewResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -119,7 +119,7 @@ async fn view() {
 ///   arguments.
 #[tokio::test]
 async fn view_no_subjects() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     let mut env = Environment::default().await;
 

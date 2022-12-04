@@ -22,7 +22,7 @@ use instrumentality::config;
 use instrumentality::config::IConfig;
 use instrumentality::data::Data;
 use instrumentality::database;
-use instrumentality::response::LoginResponse;
+use instrumentality::routes::response::LoginResponse;
 use instrumentality::server;
 use instrumentality::user::User;
 use tower::Service;

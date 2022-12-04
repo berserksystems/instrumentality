@@ -11,7 +11,7 @@ use tower::Service;
 /// - the response corresponds with the given configuration.
 #[tokio::test]
 async fn types() {
-    use instrumentality::response::TypesResponse;
+    use instrumentality::routes::response::TypesResponse;
 
     let mut env: Environment = Environment::default().await;
 

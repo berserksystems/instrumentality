@@ -17,7 +17,7 @@ use uuid::Uuid;
 ///     - an OK.
 #[tokio::test]
 async fn add() {
-    use instrumentality::response::OkResponse;
+    use instrumentality::routes::response::OkResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -61,7 +61,7 @@ async fn add() {
 ///     - an OK.
 #[tokio::test]
 async fn add_multiple() {
-    use instrumentality::response::OkResponse;
+    use instrumentality::routes::response::OkResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -106,7 +106,7 @@ async fn add_multiple() {
 /// - Authentication of the test user fails with an invalid key.
 #[tokio::test]
 async fn add_bad_key() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -149,7 +149,7 @@ async fn add_bad_key() {
 /// - Adding data fails when an invalid queue ID is provided.
 #[tokio::test]
 async fn add_bad_queue_id() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -192,7 +192,7 @@ async fn add_bad_queue_id() {
 /// - Adding data fails when no data is provided.
 #[tokio::test]
 async fn add_empty_data() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     let mut env = Environment::default().await;
 

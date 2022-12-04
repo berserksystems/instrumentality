@@ -14,7 +14,7 @@ use tower::Service;
 ///     - empty subjects and groups array
 #[tokio::test]
 async fn login() {
-    use instrumentality::response::LoginResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     let mut env: Environment = Environment::default().await;
 
@@ -32,7 +32,7 @@ async fn login() {
 /// - Authentication without a X-API-KEY header returns not authorised.
 #[tokio::test]
 async fn login_no_key() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     let mut env: Environment = Environment::default().await;
 
@@ -62,7 +62,7 @@ async fn login_no_key() {
 /// - Authentication without a X-API-KEY header returns not authorised.
 #[tokio::test]
 async fn login_bad_key() {
-    use instrumentality::response::ErrorResponse;
+    use instrumentality::routes::response::ErrorResponse;
 
     const INVALID_API_KEY: &str = "INVALID_API_KEY";
 

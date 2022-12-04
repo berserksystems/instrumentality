@@ -14,9 +14,9 @@ use tower::Service;
 async fn group_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -115,9 +115,9 @@ async fn group_creation() {
 async fn group_bad_key_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -220,10 +220,10 @@ async fn group_bad_key_creation() {
 async fn group_deletion() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
     use instrumentality::routes::delete::DeleteData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -362,10 +362,10 @@ async fn group_deletion() {
 async fn group_subject_deletion() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
     use instrumentality::routes::delete::DeleteData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -498,9 +498,9 @@ async fn group_subject_deletion() {
 async fn group_update() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::update::UpdateData;
 
     const USERNAME: &str = "TEST_USER_1";
@@ -680,9 +680,9 @@ async fn group_update() {
 async fn group_bad_uuid_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -785,9 +785,9 @@ async fn group_bad_uuid_creation() {
 async fn group_bad_uuid_update() {
     use std::collections::HashMap;
 
-    use instrumentality::response::CreateResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::CreateResponse;
+    use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::update::UpdateData;
 
     const USERNAME: &str = "TEST_USER_1";

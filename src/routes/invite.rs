@@ -14,7 +14,7 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
-use crate::response::{ErrorResponse, InviteResponse};
+use crate::routes::response::{ErrorResponse, InviteResponse};
 use crate::user::User;
 
 pub struct InviteError;

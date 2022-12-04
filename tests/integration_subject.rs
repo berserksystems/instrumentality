@@ -14,9 +14,9 @@ use tower::Service;
 async fn subject_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::LoginResponse;
-    use instrumentality::response::OkResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::response::OkResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -76,8 +76,8 @@ async fn subject_creation() {
 async fn subject_bad_key_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::ErrorResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::ErrorResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -131,10 +131,10 @@ async fn subject_bad_key_creation() {
 async fn subject_deletion() {
     use std::collections::HashMap;
 
-    use instrumentality::response::LoginResponse;
-    use instrumentality::response::OkResponse;
     use instrumentality::routes::create::CreateData;
     use instrumentality::routes::delete::DeleteData;
+    use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::response::OkResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -225,9 +225,9 @@ async fn subject_deletion() {
 async fn subject_update() {
     use std::collections::HashMap;
 
-    use instrumentality::response::LoginResponse;
-    use instrumentality::response::OkResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::response::OkResponse;
     use instrumentality::routes::update::UpdateData;
 
     const USERNAME_PLATFORM_1: &str = "TEST_USER_1";
@@ -347,9 +347,9 @@ async fn subject_update() {
 async fn subject_bad_platform_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::response::ErrorResponse;
-    use instrumentality::response::LoginResponse;
     use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::response::ErrorResponse;
+    use instrumentality::routes::response::LoginResponse;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";

@@ -18,7 +18,7 @@ use uuid::Uuid;
 use crate::database::DBHandle;
 use crate::database::DBPool;
 use crate::group::Group;
-use crate::response::ErrorResponse;
+use crate::routes::response::ErrorResponse;
 use crate::subject::Subject;
 
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
