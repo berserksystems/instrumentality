@@ -32,18 +32,19 @@ Data is about subjects and is continuous, discrete or meta.
 - Queue system for prioritising jobs.
 
 ### Roadmap.
-#### Minor.
+#### Ecosystem.
+- [ ] Provider clients: Python, Rust.
+- [ ] Consumer clients: Web frontend.
+
+#### Features.
 - [ ] Performance profiling and load testing.
-- [ ] Admin tooling.
-- [ ] Better `/view` query syntax.
+- [ ] Multiple databases.
+- [ ] Enhanced `/view` query syntax.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.
-
-#### Major.
-- [ ] Switch to Diesel.
-- [ ] Configuration update story.
-- [ ] Composable groups (groups can contain groups).
-- [ ] Analytics and reporting.
+- [ ] Composable groups.
 - [ ] Webhooks.
-- [ ] Example front end.
-- [ ] Handling discrepencies/byzantine platforms through consensus.
+- [ ] Analytics.
+- [ ] Admin tooling.
+- [ ] Configuration file updating workflow.
+- [ ] Byzantine consensus.
