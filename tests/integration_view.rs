@@ -40,7 +40,7 @@ async fn view() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -68,7 +68,7 @@ async fn view() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -95,7 +95,7 @@ async fn view() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri(format!("/view?subjects={}", uuid))
                 .body(Body::empty())
                 .unwrap(),
@@ -128,7 +128,7 @@ async fn view_no_subjects() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/view")
                 .body(Body::empty())
                 .unwrap(),

@@ -33,6 +33,7 @@ pub const TEST_ENVIRONMENT_CONFIG: &str = "InstrumentalityTest.toml";
 pub struct Environment {
     pub app: Router,
     pub user: User,
+    pub user_key: String,
     pub config: IConfig,
     pub handle: Handle,
 }
@@ -49,12 +50,13 @@ impl Environment {
         config.mongodb.database = test_db_id.clone();
         let (app, _, _, handle) = server::build_server(&config).await;
 
-        let user = User::new("test");
+        let (user, key) = User::new("test");
         Self::inject_account(&config, &user).await;
 
         Self {
             app,
             user,
+            user_key: key,
             config,
             handle,
         }
@@ -76,7 +78,7 @@ impl Environment {
             .call(
                 Request::builder()
                     .method(Method::GET)
-                    .header("X-API-KEY", &self.user.key)
+                    .header("X-API-KEY", &self.user_key)
                     .uri("/login")
                     .body(Body::empty())
                     .unwrap(),

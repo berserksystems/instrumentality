@@ -11,14 +11,15 @@ use mongodb::bson::doc;
 use crate::database::DBHandle;
 use crate::routes::response::{ErrorResponse, ResetResponse};
 use crate::user::User;
+use crate::utils::random;
 
 pub async fn reset(user: User, mut db: DBHandle) -> impl IntoResponse {
-    let new_key = User::new_key();
+    let (new_key, hashed_new_key) = random::new_key();
     let u_coll = db.collection::<User>("users");
     u_coll
         .find_one_and_update_with_session(
-            doc! {"key": user.key},
-            doc! { "$set": {"key": &new_key}},
+            doc! {"hashed_key": user.hashed_key},
+            doc! { "$set": {"hashed_key": &hashed_new_key}},
             None,
             &mut db.session,
         )

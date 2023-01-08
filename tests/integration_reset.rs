@@ -25,7 +25,7 @@ async fn reset() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/reset")
                 .body(Body::empty())
                 .unwrap(),

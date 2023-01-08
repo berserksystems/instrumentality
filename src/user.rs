@@ -1,7 +1,5 @@
 //! Basic user concepts for Instrumentality.
 
-use std::fmt::Write;
-
 use axum::extract::FromRequestParts;
 use axum::http::{request::Parts, StatusCode};
 use axum::response::{IntoResponse, Response};
@@ -20,37 +18,38 @@ use crate::database::DBPool;
 use crate::group::Group;
 use crate::routes::response::ErrorResponse;
 use crate::subject::Subject;
+use crate::utils::random;
 
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
 pub struct User {
     pub uuid: String,
     pub name: String,
-    pub key: String,
+    pub hashed_key: String,
     pub admin: bool,
     pub banned: bool,
     pub created_at: DateTime<Utc>,
 }
 
 impl User {
-    pub fn new(name: &str) -> Self {
-        Self {
-            uuid: Uuid::new_v4().to_string(),
-            name: name.to_string(),
-            key: Self::new_key(),
-            admin: false,
-            banned: false,
-            created_at: Utc::now(),
-        }
+    pub fn new(name: &str) -> (Self, String) {
+        let (key, hashed_key) = random::new_key();
+        (
+            Self {
+                uuid: Uuid::new_v4().to_string(),
+                name: name.to_string(),
+                hashed_key,
+                admin: false,
+                banned: false,
+                created_at: Utc::now(),
+            },
+            key,
+        )
     }
 
-    pub fn new_key() -> String {
-        let key_bytes: &mut [u8] = &mut [0; 32];
-        getrandom::getrandom(key_bytes).unwrap();
-        let mut key = String::new();
-        for b in key_bytes {
-            write!(&mut key, "{b:0>2X}").unwrap();
-        }
-        key
+    pub fn new_admin(name: &str) -> (Self, String) {
+        let (mut admin, key) = Self::new(name);
+        admin.admin = true;
+        (admin, key)
     }
 
     pub async fn subjects(&self, db: &mut DBHandle) -> Option<Vec<Subject>> {
@@ -97,7 +96,7 @@ impl User {
     pub async fn with_key(key: &str, db: &mut DBHandle) -> Option<Self> {
         let users_coll: Collection<User> = db.collection("users");
         users_coll
-            .find_one_with_session(doc! {"key": key}, None, &mut db.session)
+            .find_one_with_session(doc! {"hashed_key": key}, None, &mut db.session)
             .await
             .unwrap()
     }
@@ -119,7 +118,9 @@ where
         match key {
             Some(key) => {
                 let key = key.to_str().unwrap();
-                let user = User::with_key(key, &mut db.handle().await).await;
+                let hashed_key = random::hash_string(key);
+                let user =
+                    User::with_key(&hashed_key, &mut db.handle().await).await;
 
                 match user {
                     Some(user) => Ok(user),
@@ -144,7 +145,7 @@ mod test {
     use super::*;
     #[test]
     fn test_new_user() {
-        let user = User::new("test");
+        let (user, _) = User::new("test");
 
         assert!(!user.banned);
         assert!(!user.admin);
@@ -153,10 +154,10 @@ mod test {
 
     #[test]
     fn test_key() {
-        let user = User::new("test");
+        let (_, key) = User::new("test");
         let re = regex::Regex::new(r"^([A-F0-9])*$").unwrap();
 
-        assert_eq!(user.key.len(), 64);
-        assert!(re.is_match(&user.key));
+        assert_eq!(key.len(), 64);
+        assert!(re.is_match(&key));
     }
 }

@@ -20,7 +20,7 @@ async fn register_with_invite() {
     use instrumentality::routes::register::RegisterRequest;
     use instrumentality::routes::response::InviteResponse;
     use instrumentality::routes::response::LoginResponse;
-    use instrumentality::routes::response::UserResponse;
+    use instrumentality::routes::response::RegisterResponse;
 
     const USERNAME: &str = "TEST_USER_1";
 
@@ -31,7 +31,7 @@ async fn register_with_invite() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/invite")
                 .body(Body::empty())
                 .unwrap(),
@@ -73,7 +73,7 @@ async fn register_with_invite() {
         .unwrap();
 
     let body = hyper::body::to_bytes(res.into_body()).await.unwrap();
-    let rr: UserResponse = serde_json::from_slice(&body).unwrap();
+    let rr: RegisterResponse = serde_json::from_slice(&body).unwrap();
 
     assert_eq!(rr.response, "OK".to_string());
     assert_eq!(rr.user.name, USERNAME.to_string());
@@ -83,7 +83,7 @@ async fn register_with_invite() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &rr.user.key)
+                .header("X-API-KEY", &rr.code)
                 .uri("/login")
                 .body(Body::empty())
                 .unwrap(),

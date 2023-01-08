@@ -34,7 +34,7 @@ async fn add() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -81,7 +81,7 @@ async fn add_multiple() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -167,7 +167,7 @@ async fn add_bad_queue_id() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -206,7 +206,7 @@ async fn add_empty_data() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -264,7 +264,7 @@ async fn add_invalid_content_type() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -312,7 +312,7 @@ async fn add_invalid_presence_type() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -360,7 +360,7 @@ async fn add_invalid_presence_type_for_platform() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -415,7 +415,7 @@ async fn add_invalid_content_type_for_platform() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),

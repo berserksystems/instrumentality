@@ -26,7 +26,7 @@ async fn invite() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/invite")
                 .body(Body::empty())
                 .unwrap(),

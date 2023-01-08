@@ -77,8 +77,8 @@ pub async fn open(
         .contains(&config.mongodb.database);
 
     if is_fresh_install {
-        let root_user = create_root_account(&database).await.unwrap();
-        tracing::info!("Created root account.");
+        let (root_user, key) = create_root_account(&database).await.unwrap();
+        tracing::info!("Created root account with key {}", key);
         tracing::info!("\n{:#?}", root_user);
         create_indexes(&database).await;
         tracing::info!("Created MongoDB indices.")
@@ -92,14 +92,11 @@ pub async fn open(
 
 async fn create_root_account(
     database: &Database,
-) -> Result<User, Box<dyn std::error::Error>> {
+) -> Result<(User, String), Box<dyn std::error::Error>> {
     let users_coll: Collection<User> = database.collection("users");
-    let user = User {
-        admin: true,
-        ..User::new("root")
-    };
-    users_coll.insert_one(&user, None).await.unwrap();
-    Ok(user)
+    let (root, key) = User::new_admin("root");
+    users_coll.insert_one(&root, None).await.unwrap();
+    Ok((root, key))
 }
 
 async fn create_indexes(database: &Database) {

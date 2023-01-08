@@ -14,10 +14,7 @@ use tower::Service;
 async fn halt() {
     let mut env: Environment = Environment::default().await;
 
-    let test_admin_user = User {
-        admin: true,
-        ..User::new("test_admin")
-    };
+    let (test_admin_user, key) = User::new_admin("test_admin");
 
     Environment::inject_account(&env.config, &test_admin_user).await;
 
@@ -27,7 +24,7 @@ async fn halt() {
             Request::builder()
                 .method(Method::GET)
                 .uri("/halt")
-                .header("X-API-KEY", &test_admin_user.key)
+                .header("X-API-KEY", &key)
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -79,7 +76,7 @@ async fn halt_bad_permissions() {
             Request::builder()
                 .method(Method::GET)
                 .uri("/halt")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .body(Body::empty())
                 .unwrap(),
         )
