@@ -88,7 +88,7 @@ async fn use_invite(
     let hashed_code = random::hash_string(&req.code);
     let result = refs_coll
         .find_one_and_update_with_session(
-            doc! {"code": hashed_code, "used": false},
+            doc! {"hashed_code": hashed_code, "used": false},
             doc! {"$set": {"used": true, "used_by": &user.uuid}},
             None,
             &mut db.session,

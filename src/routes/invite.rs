@@ -22,7 +22,7 @@ pub struct InviteError;
 pub struct Referral {
     created_by: String,
     created_at: DateTime<Utc>,
-    code: String,
+    hashed_code: String,
     used: bool,
     used_by: Option<String>,
 }
@@ -34,7 +34,7 @@ impl Referral {
             Self {
                 created_by,
                 created_at: Utc::now(),
-                code: hashed_invite_code,
+                hashed_code: hashed_invite_code,
                 used: false,
                 used_by: None,
             },
