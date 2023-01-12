@@ -42,7 +42,7 @@ async fn queue_entry_created() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -65,7 +65,7 @@ async fn queue_entry_created() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=[PLATFORM_1]")
                 .body(Body::empty())
                 .unwrap(),
@@ -117,7 +117,7 @@ async fn queue_entry_created_alternate_syntax() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -140,7 +140,7 @@ async fn queue_entry_created_alternate_syntax() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),
@@ -195,7 +195,7 @@ async fn queue_locks_entry() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -218,7 +218,7 @@ async fn queue_locks_entry() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),
@@ -241,7 +241,7 @@ async fn queue_locks_entry() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),
@@ -299,7 +299,7 @@ async fn queue_add_unlocks_entry() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -322,7 +322,7 @@ async fn queue_add_unlocks_entry() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri(format!("/queue?platforms={}", PLATFORM_NAME))
                 .body(Body::empty())
                 .unwrap(),
@@ -352,7 +352,7 @@ async fn queue_add_unlocks_entry() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -376,7 +376,7 @@ async fn queue_add_unlocks_entry() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),
@@ -437,7 +437,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -460,7 +460,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri(format!("/queue?platforms={}", PLATFORM_NAME))
                 .body(Body::empty())
                 .unwrap(),
@@ -511,7 +511,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -535,7 +535,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),
@@ -590,7 +590,7 @@ async fn queue_lock_times_out() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -613,7 +613,7 @@ async fn queue_lock_times_out() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),
@@ -643,7 +643,7 @@ async fn queue_lock_times_out() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .uri("/queue?platforms=PLATFORM_1")
                 .body(Body::empty())
                 .unwrap(),

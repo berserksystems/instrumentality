@@ -39,7 +39,7 @@ async fn subject_creation() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -157,7 +157,7 @@ async fn subject_deletion() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -191,7 +191,7 @@ async fn subject_deletion() {
             Request::builder()
                 .method(Method::DELETE)
                 .uri("/delete")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -256,7 +256,7 @@ async fn subject_update() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -309,7 +309,7 @@ async fn subject_update() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/update")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -371,7 +371,7 @@ async fn subject_bad_platform_creation() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),

@@ -39,7 +39,7 @@ async fn group_creation() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -82,7 +82,7 @@ async fn group_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -141,7 +141,7 @@ async fn group_bad_key_creation() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -246,7 +246,7 @@ async fn group_deletion() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -289,7 +289,7 @@ async fn group_deletion() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -320,7 +320,7 @@ async fn group_deletion() {
         .call(
             Request::builder()
                 .method(Method::DELETE)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -388,7 +388,7 @@ async fn group_subject_deletion() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -431,7 +431,7 @@ async fn group_subject_deletion() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -460,7 +460,7 @@ async fn group_subject_deletion() {
         .call(
             Request::builder()
                 .method(Method::DELETE)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -524,7 +524,7 @@ async fn group_update() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -567,7 +567,7 @@ async fn group_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -610,7 +610,7 @@ async fn group_update() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -640,7 +640,7 @@ async fn group_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -705,7 +705,7 @@ async fn group_bad_uuid_creation() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -748,7 +748,7 @@ async fn group_bad_uuid_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -811,7 +811,7 @@ async fn group_bad_uuid_update() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -854,7 +854,7 @@ async fn group_bad_uuid_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -897,7 +897,7 @@ async fn group_bad_uuid_update() {
             Request::builder()
                 .method(Method::POST)
                 .uri("/create")
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
@@ -927,7 +927,7 @@ async fn group_bad_uuid_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .header("X-API-KEY", &env.user.key)
+                .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),

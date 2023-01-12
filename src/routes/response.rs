@@ -71,16 +71,18 @@ impl QueueResponse {
 }
 
 #[derive(Deserialize, Serialize)]
-pub struct UserResponse {
+pub struct RegisterResponse {
     pub response: String,
     pub user: crate::user::User,
+    pub code: String,
 }
 
-impl UserResponse {
-    pub fn from_user(user: crate::user::User) -> Self {
+impl RegisterResponse {
+    pub fn from_user_with_code(user: crate::user::User, code: String) -> Self {
         Self {
             response: "OK".to_string(),
             user,
+            code,
         }
     }
 }

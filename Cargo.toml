@@ -17,22 +17,22 @@ name = "instrumentality"
 path = "src/lib.rs"
 
 [dependencies]
-axum = "0.6.1"
-axum-server = { version = "0.4.4", features = ["tls-rustls"] }
-tower = { version = "0.4.13", features = ["timeout"] }
-tower-http = { version = "0.3.5", features = ["set-header"] }
-tracing = "0.1.37"
-tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
-tokio = "1.23.0"
-tokio-stream = "0.1.11"
-futures-util = "0.3.25"
-mongodb = "2.3.1"
-toml = "0.5.10"
-chrono = { version = "0.4.23", default_features = false, features = ["serde"] }
-serde = "1.0.151"
-getrandom = "0.2.8"
-uuid = { version = "1.2.2", features = ["v4"] }
-
+axum = "0.6"
+axum-server = { version = "0.4", features = ["tls-rustls"] }
+tower = { version = "0.4", features = ["timeout"] }
+tower-http = { version = "0.3", features = ["set-header"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tokio = "1.24"
+tokio-stream = "0.1"
+futures-util = "0.3"
+mongodb = "2.3"
+toml = "0.5"
+chrono = { version = "0.4", default_features = false, features = ["serde"] }
+serde = "1.0"
+getrandom = "0.2"
+uuid = { version = "1.2", features = ["v4"] }
+sha2 = "0.10"
 
 [dev-dependencies]
 regex = "1.7.0"
