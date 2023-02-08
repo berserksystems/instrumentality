@@ -38,7 +38,7 @@ Data is about subjects and is continuous, discrete or meta.
 
 #### Features.
 - [ ] Performance profiling and load testing.
-- [ ] Multiple databases.
+- [ ] Migrate to PostgreSQL. 
 - [ ] Enhanced `/view` query syntax.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.
