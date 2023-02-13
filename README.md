@@ -20,7 +20,11 @@ See <https://github.com/berserksystems/instrumentality/releases/>.
 ## Architecture.
 This is an Axum web server that reads and writes data to MongoDB. Users register
 with the platform and create subjects. Subjects can be organised into groups.
-Data is about subjects and is continuous, discrete or meta.
+Data is about subjects and is continuous, discrete or metadata.
+
+## Licence.
+This program is licenced under version 3 of the 'GNU Affero General Public 
+License'. See `LICENCE` for a copy of this licence.
 
 ## Features.
 - Abstraction over common data: content, presence, metadata.

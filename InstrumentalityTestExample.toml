@@ -15,7 +15,7 @@ database = "instrumentality"
 [settings]
 log_level = "INFO"
 # Unusually short queue_timeout_secs so we aren't waiting 30 seconds for 
-# integration tests that require the use of the queue timeout.
+# integration tests that require queue timeouts.
 queue_timeout_secs = 1
 
 [network]
