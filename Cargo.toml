@@ -1,6 +1,6 @@
 [package]
 name = "instrumentality"
-version = "0.2.5"
+version = "0.2.2"
 edition = "2021"
 description = "A data aggregation platform."
 authors = ["James <james \"at\" berserksystems.com>"]
@@ -26,7 +26,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tokio = "1.25"
 tokio-stream = "0.1"
 futures-util = "0.3"
-mongodb = "2.4.0-beta.1"
+mongodb = "2.4.0-beta.2"
 toml = "0.7"
 chrono = { version = "0.4", default_features = false, features = ["serde"] }
 serde = "1.0"
