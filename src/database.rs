@@ -101,9 +101,14 @@ async fn create_root_account(
 
 async fn create_indexes(database: &Database) {
     unique_subject_name_index(database).await.unwrap();
-    create_index("Users Key Index", "users", doc! {"hashed_key" : 1_u32}, database)
-        .await
-        .unwrap();
+    create_index(
+        "Users Key Index",
+        "users",
+        doc! {"hashed_key" : 1_u32},
+        database,
+    )
+    .await
+    .unwrap();
     create_index(
         "Queue Platform & Platform ID",
         "queue",

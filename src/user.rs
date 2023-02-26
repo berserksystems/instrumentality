@@ -96,7 +96,11 @@ impl User {
     pub async fn with_key(key: &str, db: &mut DBHandle) -> Option<Self> {
         let users_coll: Collection<User> = db.collection("users");
         users_coll
-            .find_one_with_session(doc! {"hashed_key": key}, None, &mut db.session)
+            .find_one_with_session(
+                doc! {"hashed_key": key},
+                None,
+                &mut db.session,
+            )
             .await
             .unwrap()
     }

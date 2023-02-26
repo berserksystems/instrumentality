@@ -7,8 +7,8 @@ use common::Environment;
 use tower::Service;
 
 /// frontpage_bad_method tests:
-/// - Instrumentality serves a method not allowed error to bad methods.
-///   This test is general across all routes.
+/// - Instrumentality serves a method not allowed error to bad methods. This
+///   test is general across all routes.
 #[tokio::test]
 async fn frontpage_bad_method() {
     let mut env: Environment = Environment::default().await;

@@ -1,5 +1,6 @@
 use std::fmt::Write;
-use sha2::{Sha256, Digest};
+
+use sha2::{Digest, Sha256};
 
 pub fn new_key() -> (String, String) {
     new_rand_string(32)
