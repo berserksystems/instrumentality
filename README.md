@@ -7,7 +7,7 @@ single database under a common set of schemas.
 ## Thesis.
 Data should belong to people and those they choose to share it with. The order
 in which posts are presented should be changed from reverse chronological order
- (latest first) only when the user expressly wishes to do so.
+ (i.e. latest first) only when the user expressly wishes to do so.
 
 ## Documentation.
 For server administrators: <https://docs.berserksystems.com/>.
@@ -43,12 +43,12 @@ License'. See `LICENCE` for a copy of this licence.
 #### Features.
 - [ ] Performance profiling and load testing.
 - [ ] Migrate to PostgreSQL. 
-- [ ] Enhanced `/view` query syntax.
+- [ ] Better API.
+- [ ] Configuration file updating workflow.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.
-- [ ] Composable groups.
+- [ ] Enhanced `/view` query syntax.
 - [ ] Webhooks.
 - [ ] Analytics.
 - [ ] Admin tooling.
-- [ ] Configuration file updating workflow.
 - [ ] Byzantine consensus.
