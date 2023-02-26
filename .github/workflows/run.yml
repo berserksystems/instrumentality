@@ -15,17 +15,17 @@ jobs:
     - name: Git Checkout.
       uses: actions/checkout@v3
 
+    - name: Start MongoDB.
+      uses: supercharge/mongodb-github-action@1.9.0
+      with:
+        mongodb-version: '5.0'
+        mongodb-replica-set: itest
+
     - name: Rust Toolchain.
       uses: actions-rs/toolchain@v1.0.6
       with:
         toolchain: nightly
         override: true
-
-    - name: Start MongoDB.
-      uses: supercharge/mongodb-github-action@1.8.0
-      with:
-        mongodb-version: '5.0'
-        mongodb-replica-set: rstest
 
     - name: Create TLS certificates.
       run: |

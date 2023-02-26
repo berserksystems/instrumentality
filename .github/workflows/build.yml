@@ -21,6 +21,12 @@ jobs:
         toolchain: nightly
         override: true
 
+    - name: rustfmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+
     - name: Cargo Build for Release.
       uses: actions-rs/cargo@v1
       with:
