@@ -20,6 +20,7 @@ jobs:
       with:
         toolchain: nightly
         override: true
+        components: rustfmt
 
     - name: rustfmt
       uses: actions-rs/cargo@v1
