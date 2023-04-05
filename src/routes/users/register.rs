@@ -11,7 +11,7 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
-use crate::routes::invite::Referral;
+use crate::routes::users::invite::Referral;
 use crate::routes::response::{ErrorResponse, RegisterResponse};
 use crate::user::User;
 use crate::utils::random;

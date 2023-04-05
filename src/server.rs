@@ -25,20 +25,9 @@ use crate::config::IConfig;
 use crate::database;
 use crate::database::DBHandle;
 use crate::database::DBPool;
-use crate::routes::add::*;
-use crate::routes::create::*;
-use crate::routes::default::*;
-use crate::routes::frontpage::*;
-use crate::routes::halt::*;
-use crate::routes::invite::*;
-use crate::routes::login::*;
-use crate::routes::queue::*;
-use crate::routes::register::*;
-use crate::routes::reset::*;
+use crate::routes::default::error_transformer;
+use crate::routes::queue::clear_old_locks;
 use crate::routes::response::ErrorResponse;
-use crate::routes::types::*;
-use crate::routes::update::*;
-use crate::routes::view::*;
 
 pub async fn build_server(
     config: &IConfig,
@@ -91,21 +80,44 @@ fn build_app(config: IConfig, db_pool: DBPool, handle: Handle) -> Router {
         .timeout(std::time::Duration::from_secs(5));
 
     Router::new()
-        .route("/", get(frontpage))
-        .route("/add", post(add))
-        .route("/create", post(create))
-        .route("/delete", delete(crate::routes::delete::delete))
-        .route("/halt", get(halt))
-        .route("/invite", get(invite))
-        .route("/login", get(login))
-        .route("/queue", get(queue))
-        .route("/register", post(register))
-        .route("/reset", get(reset))
-        .route("/types", get(types))
-        .route("/update", post(update))
-        .route("/view", get(view))
+        .route("/", get(crate::routes::frontpage::frontpage))
+        .route("/add", post(crate::routes::add::add))
+        .route("/halt", get(crate::routes::halt::halt))
+        .route("/types", get(crate::routes::types::types))
+        .route("/view", get(crate::routes::view::view))
+        .route(
+            "/groups/create",
+            post(crate::routes::groups::create::create),
+        )
+        .route(
+            "/groups/update",
+            post(crate::routes::groups::update::update),
+        )
+        .route(
+            "/groups/delete",
+            delete(crate::routes::groups::delete::delete),
+        )
+        .route(
+            "/subjects/create",
+            post(crate::routes::subjects::create::create),
+        )
+        .route(
+            "/subjects/update",
+            post(crate::routes::subjects::update::update),
+        )
+        .route(
+            "/subjects/delete",
+            delete(crate::routes::subjects::delete::delete),
+        )
+        .route("/user/login", get(crate::routes::user::login::login))
+        .route("/user/reset", get(crate::routes::user::reset::reset))
+        .route("/users/invite", get(crate::routes::users::invite::invite))
+        .route(
+            "/users/register",
+            post(crate::routes::users::register::register),
+        )
         .layer(service_builder)
-        .fallback(default)
+        .fallback(crate::routes::default::default)
 }
 
 fn build_address(address: &str, port: &str) -> SocketAddr {
