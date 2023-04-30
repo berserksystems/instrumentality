@@ -366,10 +366,10 @@ async fn group_subject_deletion() {
     use std::collections::HashMap;
 
     use instrumentality::routes::groups::create::CreateGroupRequest;
-    use instrumentality::routes::subjects::delete::DeleteSubjectRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::subjects::create::CreateSubjectRequest;
+    use instrumentality::routes::subjects::delete::DeleteSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
