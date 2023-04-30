@@ -23,17 +23,17 @@ use crate::subject::*;
 use crate::user::User;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CreateSubject {
-    name: String,
-    profiles: HashMap<String, Vec<String>>,
-    description: Option<String>,
+pub struct CreateSubjectRequest {
+    pub name: String,
+    pub profiles: HashMap<String, Vec<String>>,
+    pub description: Option<String>,
 }
 
 pub async fn create(
     user: User,
     mut db: DBHandle,
     Extension(config): Extension<IConfig>,
-    Json(data): Json<CreateSubject>,
+    Json(data): Json<CreateSubjectRequest>,
 ) -> impl IntoResponse {
     let subj_coll: Collection<Subject> = db.collection("subjects");
     let subject = subject_from_create(data, user).await;
@@ -52,8 +52,7 @@ pub async fn create(
     if db.session.commit_transaction().await.is_ok() {
         for platform in subject.profiles.keys() {
             for id in subject.profiles.get(platform).unwrap() {
-                queue::add_queue_item(id, platform, &mut db, false)
-                    .await;
+                queue::add_queue_item(id, platform, &mut db, false).await;
             }
         }
         ok!(CREATED, CreateResponse::from_uuid(&subject.uuid))
@@ -62,7 +61,10 @@ pub async fn create(
     }
 }
 
-pub async fn subject_from_create(cs: CreateSubject, user: User) -> Subject {
+pub async fn subject_from_create(
+    cs: CreateSubjectRequest,
+    user: User,
+) -> Subject {
     Subject {
         uuid: Uuid::new_v4().to_string(),
         created_at: Utc::now(),

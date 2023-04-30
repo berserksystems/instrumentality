@@ -9,14 +9,15 @@ use tower::Service;
 /// group_creation tests:
 /// - Authentication of the test user works as expected.
 /// - Group is created upon post request.
-/// - Group can be seen via /login as provided with no changes.
+/// - Group can be seen via /user/login as provided with no changes.
 #[tokio::test]
 async fn group_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -28,7 +29,7 @@ async fn group_creation() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -38,7 +39,7 @@ async fn group_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -71,7 +72,7 @@ async fn group_creation() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "test".to_string(),
         subjects,
         description: None,
@@ -87,7 +88,7 @@ async fn group_creation() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -115,9 +116,10 @@ async fn group_creation() {
 async fn group_bad_key_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -130,7 +132,7 @@ async fn group_bad_key_creation() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -140,7 +142,7 @@ async fn group_bad_key_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -173,7 +175,7 @@ async fn group_bad_key_creation() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "test".to_string(),
         subjects,
         description: None,
@@ -189,7 +191,7 @@ async fn group_bad_key_creation() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -214,16 +216,17 @@ async fn group_bad_key_creation() {
 /// group_deletion tests:
 /// - Authentication of the test user works as expected.
 /// - Group is created upon post request.
-/// - Group can be seen via /login as provided with no changes.
+/// - Group can be seen via /user/login as provided with no changes.
 /// - Group is removed upon deletion.
 #[tokio::test]
 async fn group_deletion() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
-    use instrumentality::routes::delete::DeleteData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
+    use instrumentality::routes::groups::delete::DeleteGroupRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -235,7 +238,7 @@ async fn group_deletion() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -245,7 +248,7 @@ async fn group_deletion() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -278,7 +281,7 @@ async fn group_deletion() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "test".to_string(),
         subjects,
         description: None,
@@ -294,7 +297,7 @@ async fn group_deletion() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -325,9 +328,9 @@ async fn group_deletion() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/delete")
+                .uri("/groups/delete")
                 .body(Body::from(
-                    serde_json::to_vec(&DeleteData {
+                    serde_json::to_vec(&DeleteGroupRequest {
                         uuid: group_uuid.clone(),
                     })
                     .unwrap(),
@@ -355,17 +358,18 @@ async fn group_deletion() {
 /// group_subject_deletion tests:
 /// - Authentication of the test user works as expected.
 /// - Group is created upon post request.
-/// - Group can be seen via /login as provided with no changes.
+/// - Group can be seen via /user/login as provided with no changes.
 /// - When a subject that is a member of the group is deleted, it is removed
 ///   from the group.
 #[tokio::test]
 async fn group_subject_deletion() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
-    use instrumentality::routes::delete::DeleteData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
+    use instrumentality::routes::subjects::delete::DeleteSubjectRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -377,7 +381,7 @@ async fn group_subject_deletion() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -387,7 +391,7 @@ async fn group_subject_deletion() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -420,7 +424,7 @@ async fn group_subject_deletion() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "test".to_string(),
         subjects,
         description: None,
@@ -436,7 +440,7 @@ async fn group_subject_deletion() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -465,9 +469,9 @@ async fn group_subject_deletion() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/delete")
+                .uri("/subjects/delete")
                 .body(Body::from(
-                    serde_json::to_vec(&DeleteData {
+                    serde_json::to_vec(&DeleteSubjectRequest {
                         uuid: subject_uuid.clone(),
                     })
                     .unwrap(),
@@ -492,16 +496,17 @@ async fn group_subject_deletion() {
 /// group_update tests:
 /// - Authentication of the test user works as expected.
 /// - Group is created upon post request.
-/// - Group can be seen via /login as provided with no changes.
+/// - Group can be seen via /user/login as provided with no changes.
 /// - Group is updated correctly.
 #[tokio::test]
 async fn group_update() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
+    use instrumentality::routes::groups::update::UpdateGroupRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
-    use instrumentality::routes::update::UpdateData;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -513,7 +518,7 @@ async fn group_update() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -523,7 +528,7 @@ async fn group_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -556,7 +561,7 @@ async fn group_update() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "testers".to_string(),
         subjects,
         description: None,
@@ -572,7 +577,7 @@ async fn group_update() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -598,7 +603,7 @@ async fn group_update() {
         "PLATFORM_2".to_string(),
         vec!["user2".to_string(), "user2_priv".to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test2".to_string(),
         profiles,
         description: None,
@@ -609,7 +614,7 @@ async fn group_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -645,9 +650,9 @@ async fn group_update() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/update")
+                .uri("/groups/create")
                 .body(Body::from(
-                    serde_json::to_vec(&UpdateData::UpdateGroup {
+                    serde_json::to_vec(&UpdateGroupRequest {
                         uuid: group_uuid.clone(),
                         name: "testers".to_string(),
                         subjects,
@@ -680,9 +685,10 @@ async fn group_update() {
 async fn group_bad_uuid_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -694,7 +700,7 @@ async fn group_bad_uuid_creation() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -704,7 +710,7 @@ async fn group_bad_uuid_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -737,7 +743,7 @@ async fn group_bad_uuid_creation() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "test".to_string(),
         subjects,
         description: None,
@@ -753,7 +759,7 @@ async fn group_bad_uuid_creation() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -778,17 +784,18 @@ async fn group_bad_uuid_creation() {
 /// group_bad_uuid_update tests:
 /// - Authentication of the test user works as expected.
 /// - Group is created upon post request.
-/// - Group can be seen via /login as provided with no changes.
+/// - Group can be seen via /user/login as provided with no changes.
 /// - Update of group is rejected upon attempting to add non-existant subject
 ///   UUID.
 #[tokio::test]
 async fn group_bad_uuid_update() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
+    use instrumentality::routes::groups::create::CreateGroupRequest;
+    use instrumentality::routes::groups::update::UpdateGroupRequest;
     use instrumentality::routes::response::CreateResponse;
     use instrumentality::routes::response::LoginResponse;
-    use instrumentality::routes::update::UpdateData;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -800,7 +807,7 @@ async fn group_bad_uuid_update() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -810,7 +817,7 @@ async fn group_bad_uuid_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -843,7 +850,7 @@ async fn group_bad_uuid_update() {
 
     let subjects = vec![subject_uuid.clone()];
 
-    let new_group = CreateData::CreateGroup {
+    let new_group = CreateGroupRequest {
         name: "testers".to_string(),
         subjects,
         description: None,
@@ -859,7 +866,7 @@ async fn group_bad_uuid_update() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/create")
+                .uri("/groups/create")
                 .body(Body::from(serde_json::to_vec(&new_group).unwrap()))
                 .unwrap(),
         )
@@ -885,7 +892,7 @@ async fn group_bad_uuid_update() {
         "PLATFORM_2".to_string(),
         vec!["user2".to_string(), "user2_priv".to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test2".to_string(),
         profiles,
         description: None,
@@ -896,7 +903,7 @@ async fn group_bad_uuid_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -932,9 +939,9 @@ async fn group_bad_uuid_update() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/update")
+                .uri("/groups/create")
                 .body(Body::from(
-                    serde_json::to_vec(&UpdateData::UpdateGroup {
+                    serde_json::to_vec(&UpdateGroupRequest {
                         uuid: group_uuid.clone(),
                         name: "testers".to_string(),
                         subjects,

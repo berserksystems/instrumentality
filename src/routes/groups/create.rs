@@ -19,7 +19,7 @@ use crate::subject::Subject;
 use crate::user::User;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct CreateGroup {
+pub struct CreateGroupRequest {
     pub name: String,
     pub subjects: Vec<String>,
     pub description: Option<String>,
@@ -28,7 +28,7 @@ pub struct CreateGroup {
 pub async fn create(
     user: User,
     mut db: DBHandle,
-    Json(data): Json<CreateGroup>,
+    Json(data): Json<CreateGroupRequest>,
 ) -> impl IntoResponse {
     let group_coll: Collection<Group> = db.collection("groups");
     let group = group_from_create(data, user).await;
@@ -57,7 +57,7 @@ pub async fn create(
     }
 }
 
-pub async fn group_from_create(cg: CreateGroup, user: User) -> Group {
+pub async fn group_from_create(cg: CreateGroupRequest, user: User) -> Group {
     Group {
         uuid: Uuid::new_v4().to_string(),
         created_at: Utc::now(),

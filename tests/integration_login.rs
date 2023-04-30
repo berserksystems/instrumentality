@@ -41,7 +41,7 @@ async fn login_no_key() {
         .call(
             Request::builder()
                 .method(Method::GET)
-                .uri("/login")
+                .uri("/user/login")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -74,7 +74,7 @@ async fn login_bad_key() {
             Request::builder()
                 .method(Method::GET)
                 .header("X-API-KEY", INVALID_API_KEY)
-                .uri("/login")
+                .uri("/user/login")
                 .body(Body::empty())
                 .unwrap(),
         )
