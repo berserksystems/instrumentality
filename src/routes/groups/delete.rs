@@ -1,9 +1,9 @@
-//! Route for deleting subjects and groups.
+//! Route for deleting groups.
 //!
 //! The /delete route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/delete/>.
+//! <https://docs.berserksystems.com/endpoints/groups/delete/>.
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;

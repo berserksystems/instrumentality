@@ -1,9 +1,9 @@
-//! Route for creating subjects and groups.
+//! Route for creating groups.
 //!
-//! The /create route is implemented here.
+//! The /groups/create route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/create/>.
+//! <https://docs.berserksystems.com/endpoints/groups/create/>.
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use chrono::Utc;

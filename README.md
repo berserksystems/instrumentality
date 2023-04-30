@@ -43,7 +43,6 @@ License'. See `LICENCE` for a copy of this licence.
 #### Features.
 - [ ] Performance profiling and load testing.
 - [ ] Migrate to PostgreSQL. 
-- [ ] Better API.
 - [ ] Configuration file updating workflow.
 - [ ] Hot and cold `/queue`.
 - [ ] `/leaderboard`.

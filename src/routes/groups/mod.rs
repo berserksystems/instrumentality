@@ -1,4 +1,4 @@
-//! Routes for subjects.
+//! Routes for groups.
 
 pub mod create;
 pub mod delete;

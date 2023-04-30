@@ -1,9 +1,9 @@
-//! Route for creating subjects and groups.
+//! Route for creating subjects.
 //!
-//! The /create route is implemented here.
+//! The /subjects/create route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/create/>.
+//! <https://docs.berserksystems.com/endpoints/subjects/create/>.
 
 use std::collections::HashMap;
 

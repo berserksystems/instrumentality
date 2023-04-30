@@ -1,9 +1,9 @@
-//! Route for updating subjects and groups.
+//! Route for updating subjects.
 //!
-//! The /update route is implemented here.
+//! The /subjects/update route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/register/>.
+//! <https://docs.berserksystems.com/endpoints/subjects/update/>.
 
 use std::collections::HashMap;
 

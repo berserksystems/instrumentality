@@ -665,7 +665,7 @@ async fn group_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::OK);
+    assert_eq!(res.status(), StatusCode::CREATED);
 
     let lr: LoginResponse = env.login().await;
 
