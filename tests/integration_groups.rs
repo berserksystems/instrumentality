@@ -650,7 +650,7 @@ async fn group_update() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/groups/create")
+                .uri("/groups/update")
                 .body(Body::from(
                     serde_json::to_vec(&UpdateGroupRequest {
                         uuid: group_uuid.clone(),
@@ -665,7 +665,7 @@ async fn group_update() {
         .await
         .unwrap();
 
-    assert_eq!(res.status(), StatusCode::CREATED);
+    assert_eq!(res.status(), StatusCode::OK);
 
     let lr: LoginResponse = env.login().await;
 

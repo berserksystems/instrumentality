@@ -83,6 +83,7 @@ fn build_app(config: IConfig, db_pool: DBPool, handle: Handle) -> Router {
         .route("/", get(crate::routes::frontpage::frontpage))
         .route("/add", post(crate::routes::add::add))
         .route("/halt", get(crate::routes::halt::halt))
+        .route("/queue", get(crate::routes::queue::queue))
         .route("/types", get(crate::routes::types::types))
         .route("/view", get(crate::routes::view::view))
         .route(

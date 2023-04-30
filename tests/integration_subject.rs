@@ -308,7 +308,7 @@ async fn subject_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/subjects/create")
+                .uri("/subjects/update")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
