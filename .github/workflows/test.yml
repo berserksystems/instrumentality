@@ -36,19 +36,13 @@ jobs:
       run: |
           cp InstrumentalityTestExample.toml InstrumentalityTest.toml
 
-    - name: Cargo Test.
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --verbose --no-fail-fast
-
-    - name: Create LLVM Coverage Report.
+    - name: Test and Generate Coverage Report.
       run: |
           rustup component add llvm-tools-preview
           cargo install cargo-llvm-cov
-          cargo llvm-cov > COVERAGE
+          cargo llvm-cov -- --verbose --no-fail-fast | tee COVERAGE
 
-    - name: Artifact LLVM Coverage Report.
+    - name: Upload Coverage Report Artifact.
       uses: actions/upload-artifact@v3
       with:
         name: Coverage Report
