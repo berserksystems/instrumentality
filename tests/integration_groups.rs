@@ -939,7 +939,7 @@ async fn group_bad_uuid_update() {
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
-                .uri("/groups/create")
+                .uri("/groups/update")
                 .body(Body::from(
                     serde_json::to_vec(&UpdateGroupRequest {
                         uuid: group_uuid.clone(),
