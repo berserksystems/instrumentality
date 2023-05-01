@@ -40,7 +40,7 @@ jobs:
       run: |
           rustup component add llvm-tools-preview
           cargo install cargo-llvm-cov
-          cargo llvm-cov -- --verbose --no-fail-fast | tee COVERAGE
+          cargo llvm-cov > COVERAGE
 
     - name: Upload Coverage Report Artifact.
       uses: actions/upload-artifact@v3
