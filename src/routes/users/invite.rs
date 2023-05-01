@@ -1,9 +1,9 @@
 //! Route for creating invites for registering users.
 //!
-//! The /invite route is implemented here.
+//! The /users/invite route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/invite/>.
+//! <https://docs.berserksystems.com/endpoints/users/invite/>.
 
 use axum::{http::StatusCode, Json};
 use chrono::{DateTime, Utc};

@@ -79,7 +79,7 @@ impl Environment {
                 Request::builder()
                     .method(Method::GET)
                     .header("X-API-KEY", &self.user_key)
-                    .uri("/login")
+                    .uri("/user/login")
                     .body(Body::empty())
                     .unwrap(),
             )

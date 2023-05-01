@@ -26,7 +26,7 @@ async fn reset() {
             Request::builder()
                 .method(Method::GET)
                 .header("X-API-KEY", &env.user_key)
-                .uri("/reset")
+                .uri("/user/reset")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -50,7 +50,7 @@ async fn reset() {
             Request::builder()
                 .method(Method::GET)
                 .header("X-API-KEY", &rr.key)
-                .uri("/login")
+                .uri("/user/login")
                 .body(Body::empty())
                 .unwrap(),
         )

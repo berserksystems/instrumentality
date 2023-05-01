@@ -9,14 +9,14 @@ use tower::Service;
 /// subject_creation tests:
 /// - Authentication of the test user works as expected.
 /// - Subject is created upon post request.
-/// - Subject can be seen via /login as provided with no changes.
+/// - Subject can be seen via /user/login as provided with no changes.
 #[tokio::test]
 async fn subject_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
     use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -28,7 +28,7 @@ async fn subject_creation() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -38,7 +38,7 @@ async fn subject_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -76,8 +76,8 @@ async fn subject_creation() {
 async fn subject_bad_key_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
     use instrumentality::routes::response::ErrorResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -90,7 +90,7 @@ async fn subject_bad_key_creation() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -100,7 +100,7 @@ async fn subject_bad_key_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", INVALID_API_KEY)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -125,16 +125,16 @@ async fn subject_bad_key_creation() {
 /// subject_deletion tests:
 /// - Authentication of the test user works as expected.
 /// - Subject is created upon post request.
-/// - Subject can be seen via /login as provided with no changes.
+/// - Subject can be seen via /user/login as provided with no changes.
 /// - Subject is removed upon deletion.
 #[tokio::test]
 async fn subject_deletion() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
-    use instrumentality::routes::delete::DeleteData;
     use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::response::OkResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
+    use instrumentality::routes::subjects::delete::DeleteSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -146,7 +146,7 @@ async fn subject_deletion() {
         PLATFORM_NAME.to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -156,7 +156,7 @@ async fn subject_deletion() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -190,14 +190,14 @@ async fn subject_deletion() {
         .call(
             Request::builder()
                 .method(Method::DELETE)
-                .uri("/delete")
+                .uri("/subjects/delete")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
                     mime::APPLICATION_JSON.as_ref(),
                 )
                 .body(Body::from(
-                    serde_json::to_vec(&DeleteData { uuid }).unwrap(),
+                    serde_json::to_vec(&DeleteSubjectRequest { uuid }).unwrap(),
                 ))
                 .unwrap(),
         )
@@ -219,16 +219,16 @@ async fn subject_deletion() {
 /// subject_update tests:
 /// - Authentication of the test user works as expected.
 /// - Subject is created upon post request.
-/// - Subject can be seen via /login as provided with no changes.
+/// - Subject can be seen via /user/login as provided with no changes.
 /// - Subject is updated correctly.
 #[tokio::test]
 async fn subject_update() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
     use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::response::OkResponse;
-    use instrumentality::routes::update::UpdateData;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
+    use instrumentality::routes::subjects::update::UpdateSubjectRequest;
 
     const USERNAME_PLATFORM_1: &str = "TEST_USER_1";
     const USERNAME_PLATFORM_1_PRIV: &str = "TEST_USER_1_PRIV";
@@ -245,7 +245,7 @@ async fn subject_update() {
             USERNAME_PLATFORM_1_PRIV.to_string(),
         ],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: USERNAME_PLATFORM_1.to_string(),
         profiles,
         description: None,
@@ -255,7 +255,7 @@ async fn subject_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -296,7 +296,7 @@ async fn subject_update() {
         PLATFORM_2_NAME.to_string(),
         vec![USERNAME_PLATFORM_2.to_string()],
     );
-    let updated_subject = UpdateData::UpdateSubject {
+    let updated_subject = UpdateSubjectRequest {
         uuid,
         name: USERNAME_PLATFORM_1.to_string(),
         profiles,
@@ -308,7 +308,7 @@ async fn subject_update() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/update")
+                .uri("/subjects/update")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,
@@ -342,14 +342,14 @@ async fn subject_update() {
 /// subject_bad_platform_creation tests:
 /// - Authentication of the test user works as expected.
 /// - Subject is created upon post request.
-/// - Subject can be seen via /login as provided with no changes.
+/// - Subject can be seen via /user/login as provided with no changes.
 #[tokio::test]
 async fn subject_bad_platform_creation() {
     use std::collections::HashMap;
 
-    use instrumentality::routes::create::CreateData;
     use instrumentality::routes::response::ErrorResponse;
     use instrumentality::routes::response::LoginResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const USERNAME: &str = "TEST_USER_1";
     const USERNAME_PRIV: &str = "TEST_USER_1_PRIV";
@@ -360,7 +360,7 @@ async fn subject_bad_platform_creation() {
         "BADPLATFORM".to_string(),
         vec![USERNAME.to_string(), USERNAME_PRIV.to_string()],
     );
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: "test".to_string(),
         profiles,
         description: None,
@@ -370,7 +370,7 @@ async fn subject_bad_platform_creation() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,

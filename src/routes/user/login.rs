@@ -1,9 +1,9 @@
 //! Routes for fetching user information.
 //!
-//! The /login route is implemented here.
+//! The /user/login route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/login/>.
+//! <https://docs.berserksystems.com/endpoints/user/login/>.
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 

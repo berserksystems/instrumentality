@@ -14,7 +14,6 @@
 //! [MongoDB]: https://www.mongodb.com/
 //! [Axum]: https://github.com/tokio-rs/axum/
 
-#![feature(is_some_and)]
 pub mod boot;
 pub mod config;
 pub mod data;

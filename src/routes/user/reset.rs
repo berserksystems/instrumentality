@@ -1,9 +1,9 @@
-//! Route for resetting an API key for Instrumentality.
+//! Route for resetting a user's API key for Instrumentality.
 //!
-//! The /reset route is implemented here.
+//! The /user/reset route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/reset/>.
+//! <https://docs.berserksystems.com/endpoints/user/reset/>.
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;

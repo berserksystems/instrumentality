@@ -27,7 +27,7 @@ async fn invite() {
             Request::builder()
                 .method(Method::GET)
                 .header("X-API-KEY", &env.user_key)
-                .uri("/invite")
+                .uri("/users/invite")
                 .body(Body::empty())
                 .unwrap(),
         )
@@ -65,7 +65,7 @@ async fn invite_bad_key() {
             Request::builder()
                 .method(Method::GET)
                 .header("X-API-KEY", INVALID_API_KEY)
-                .uri("/invite")
+                .uri("/users/invite")
                 .body(Body::empty())
                 .unwrap(),
         )

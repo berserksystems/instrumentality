@@ -16,10 +16,10 @@ async fn view() {
     use std::collections::HashMap;
 
     use instrumentality::data::Datas;
-    use instrumentality::routes::create::CreateData;
     use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::response::OkResponse;
     use instrumentality::routes::response::ViewResponse;
+    use instrumentality::routes::subjects::create::CreateSubjectRequest;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -28,7 +28,7 @@ async fn view() {
 
     let mut profiles: HashMap<String, Vec<String>> = HashMap::new();
     profiles.insert(PLATFORM_NAME.to_string(), vec![USERNAME.to_string()]);
-    let new_subject = CreateData::CreateSubject {
+    let new_subject = CreateSubjectRequest {
         name: USERNAME.to_string(),
         profiles,
         description: None,
@@ -39,7 +39,7 @@ async fn view() {
         .call(
             Request::builder()
                 .method(Method::POST)
-                .uri("/create")
+                .uri("/subjects/create")
                 .header("X-API-KEY", &env.user_key)
                 .header(
                     axum::http::header::CONTENT_TYPE,

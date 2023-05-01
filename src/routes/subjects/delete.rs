@@ -1,9 +1,9 @@
-//! Route for deleting subjects and groups.
+//! Route for deleting subjects.
 //!
-//! The /delete route is implemented here.
+//! The /subjects/delete route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/delete/>.
+//! <https://docs.berserksystems.com/endpoints/subjects/delete/>.
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
@@ -19,7 +19,7 @@ use crate::subject::*;
 use crate::user::User;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct DeleteData {
+pub struct DeleteSubjectRequest {
     pub uuid: String,
 }
 
@@ -27,7 +27,7 @@ pub struct DeleteData {
 pub async fn delete(
     user: User,
     mut db: DBHandle,
-    Json(data): Json<DeleteData>,
+    Json(data): Json<DeleteSubjectRequest>,
 ) -> impl IntoResponse {
     // UUID of the requester.
     let req_uuid = user.uuid;
@@ -72,31 +72,10 @@ pub async fn delete(
             error!(INTERNAL_SERVER_ERROR, "Internal server error.")
         }
     } else {
-        let group_coll: Collection<Group> = db.collection("groups");
-        if let Ok(Some(_)) = group_coll
-            .find_one_with_session(
-                doc! {"uuid": &data.uuid, "created_by": &req_uuid},
-                None,
-                &mut db.session,
-            )
-            .await
-        {
-            group_coll
-                .delete_one_with_session(
-                    doc! {"uuid": &data.uuid, "created_by": &req_uuid},
-                    None,
-                    &mut db.session,
-                )
-                .await
-                .unwrap();
-            db.session.commit_transaction().await.unwrap();
-            ok!()
-        } else {
-            error!(
-                BAD_REQUEST,
-                "No such group or subject exists or it was
-            not created by the user with the given key."
-            )
-        }
+        error!(
+            BAD_REQUEST,
+            "No such subject exists, or it was not created by the user with the 
+            given key."
+        )
     }
 }

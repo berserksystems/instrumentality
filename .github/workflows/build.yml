@@ -22,7 +22,7 @@ jobs:
         override: true
         components: rustfmt
 
-    - name: rustfmt
+    - name: Rustfmt.
       uses: actions-rs/cargo@v1
       with:
         command: fmt

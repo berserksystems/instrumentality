@@ -1,9 +1,9 @@
-//! Route for registering as a new user for Instrumentality.
+//! Route for registering as a new user of Instrumentality.
 //!
-//! The /register route is implemented here.
+//! The /users/register route is implemented here.
 //!
 //! See endpoint documentation at
-//! <https://docs.berserksystems.com/endpoints/register/>.
+//! <https://docs.berserksystems.com/endpoints/users/register/>.
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
@@ -11,8 +11,8 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
 use crate::database::DBHandle;
-use crate::routes::invite::Referral;
 use crate::routes::response::{ErrorResponse, RegisterResponse};
+use crate::routes::users::invite::Referral;
 use crate::user::User;
 use crate::utils::random;
 
