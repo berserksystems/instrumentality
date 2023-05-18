@@ -74,12 +74,12 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::concepts::data::Data;
+use crate::concepts::subject::Subject;
+use crate::concepts::user::User;
 use crate::config::IConfig;
-use crate::data::Data;
 use crate::database::DBHandle;
 use crate::routes::response::{ErrorResponse, QueueResponse};
-use crate::subject::Subject;
-use crate::user::User;
 use crate::utils::deserialise_array::deserialise_array;
 
 #[derive(Debug, Serialize, Deserialize)]

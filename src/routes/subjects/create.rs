@@ -15,12 +15,12 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::concepts::subject::*;
+use crate::concepts::user::User;
 use crate::config::IConfig;
 use crate::database::DBHandle;
 use crate::routes::queue;
 use crate::routes::response::{CreateResponse, ErrorResponse};
-use crate::subject::*;
-use crate::user::User;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CreateSubjectRequest {

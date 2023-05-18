@@ -7,7 +7,7 @@ use chrono::Utc;
 use common::create_mock_content;
 use common::create_mock_presence;
 use common::Environment;
-use instrumentality::data::Datas;
+use instrumentality::concepts::data::Datas;
 use tower::Service;
 use uuid::Uuid;
 
@@ -232,7 +232,7 @@ async fn add_empty_data() {
 /// - Adding data fails when a content with an invalid content type is provided.
 #[tokio::test]
 async fn add_invalid_content_type() {
-    use instrumentality::data::Data;
+    use instrumentality::concepts::data::Data;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -287,7 +287,7 @@ async fn add_invalid_content_type() {
 ///   provided.
 #[tokio::test]
 async fn add_invalid_presence_type() {
-    use instrumentality::data::Data;
+    use instrumentality::concepts::data::Data;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -335,7 +335,7 @@ async fn add_invalid_presence_type() {
 ///   provided, but the presence type would be valid for another platform.
 #[tokio::test]
 async fn add_invalid_presence_type_for_platform() {
-    use instrumentality::data::Data;
+    use instrumentality::concepts::data::Data;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";
@@ -383,7 +383,7 @@ async fn add_invalid_presence_type_for_platform() {
 ///   but the content type would be valid for another platform.
 #[tokio::test]
 async fn add_invalid_content_type_for_platform() {
-    use instrumentality::data::Data;
+    use instrumentality::concepts::data::Data;
 
     const PLATFORM_NAME: &str = "PLATFORM_1";
     const USERNAME: &str = "TEST_USER_1";

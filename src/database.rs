@@ -10,10 +10,10 @@ use mongodb::results::CreateIndexResult;
 use mongodb::ClientSession;
 use mongodb::{bson::doc, Client, Collection, Database, IndexModel};
 
+use crate::concepts::data::Data;
+use crate::concepts::subject::Subject;
+use crate::concepts::user::User;
 use crate::config::IConfig;
-use crate::data::Data;
-use crate::subject::Subject;
-use crate::user::User;
 
 #[derive(Clone)]
 pub struct DBPool {

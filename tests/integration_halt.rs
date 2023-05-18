@@ -4,7 +4,7 @@ use axum::http::Method;
 use axum::http::Request;
 use axum::http::StatusCode;
 use common::Environment;
-use instrumentality::user::User;
+use instrumentality::concepts::user::User;
 use tower::Service;
 
 /// halt tests:

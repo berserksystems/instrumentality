@@ -275,7 +275,7 @@ async fn queue_locks_entry() {
 async fn queue_add_unlocks_entry() {
     use std::collections::HashMap;
 
-    use instrumentality::data::Datas;
+    use instrumentality::concepts::data::Datas;
     use instrumentality::routes::response::OkResponse;
     use instrumentality::routes::response::QueueResponse;
     use instrumentality::routes::subjects::create::CreateSubjectRequest;
@@ -411,8 +411,8 @@ async fn queue_add_unlocks_entry() {
 async fn queue_add_meta_data_modifies_platform_id() {
     use std::collections::HashMap;
 
-    use instrumentality::data::Data;
-    use instrumentality::data::Datas;
+    use instrumentality::concepts::data::Data;
+    use instrumentality::concepts::data::Datas;
     use instrumentality::routes::response::OkResponse;
     use instrumentality::routes::response::QueueResponse;
     use instrumentality::routes::subjects::create::CreateSubjectRequest;

@@ -18,13 +18,13 @@ use axum::http::StatusCode;
 use axum::Router;
 use axum_server::Handle;
 use chrono::Utc;
+use instrumentality::concepts::data::Data;
+use instrumentality::concepts::user::User;
 use instrumentality::config;
 use instrumentality::config::IConfig;
-use instrumentality::data::Data;
 use instrumentality::database;
 use instrumentality::routes::response::LoginResponse;
 use instrumentality::server;
-use instrumentality::user::User;
 use tower::Service;
 use uuid::Uuid;
 

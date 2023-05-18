@@ -12,11 +12,11 @@ use mongodb::bson::doc;
 use mongodb::{bson, Collection};
 use serde::{Deserialize, Serialize};
 
+use crate::concepts::subject::*;
+use crate::concepts::user::User;
 use crate::database::DBHandle;
 use crate::routes::queue;
 use crate::routes::response::{ErrorResponse, OkResponse};
-use crate::subject::*;
-use crate::user::User;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct UpdateSubjectRequest {

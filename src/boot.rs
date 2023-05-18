@@ -1,3 +1,4 @@
+//! Instructions used to boot Instrumentality.
 use std::fs::File;
 use std::io::Write;
 
