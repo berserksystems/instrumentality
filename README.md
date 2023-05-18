@@ -10,9 +10,7 @@ in which posts are presented should be changed from reverse chronological order
  (i.e. latest first) only when the user expressly wishes to do so.
 
 ## Documentation.
-For server administrators: <https://docs.berserksystems.com/>.
-
-For developers: <https://docs.rs/instrumentality/>.
+See <https://docs.rs/instrumentality/>.
 
 ## Download.
 See <https://github.com/berserksystems/instrumentality/releases/>.
@@ -41,6 +39,8 @@ License'. See `LICENCE` for a copy of this licence.
 - [ ] Consumer clients: Web frontend.
 
 #### Features.
+- [ ] Logging.
+- [ ] Documentation for system administrators.
 - [ ] Performance profiling and load testing.
 - [ ] Migrate to PostgreSQL. 
 - [ ] Configuration file updating workflow.
