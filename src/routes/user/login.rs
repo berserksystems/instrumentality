@@ -7,9 +7,9 @@
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 
+use crate::concepts::user::User;
 use crate::database::DBHandle;
 use crate::routes::response::LoginResponse;
-use crate::user::User;
 
 pub async fn login(user: User, mut db: DBHandle) -> impl IntoResponse {
     let subjects = user.subjects(&mut db).await.unwrap_or_default();

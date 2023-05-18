@@ -14,8 +14,7 @@ pub fn hash_string(string: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(string);
     let hashed = hasher.finalize();
-    let hashed_hex_string = bytes_to_hex_string(&hashed);
-    hashed_hex_string
+    bytes_to_hex_string(&hashed)
 }
 
 fn new_rand_string(length: usize) -> (String, String) {

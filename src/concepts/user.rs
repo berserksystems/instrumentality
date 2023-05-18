@@ -1,10 +1,5 @@
 //! Basic user concepts for Instrumentality.
 
-use axum::extract::FromRequestParts;
-use axum::http::{request::Parts, StatusCode};
-use axum::response::{IntoResponse, Response};
-use axum::{async_trait, RequestPartsExt};
-use axum::{Extension, Json};
 use chrono::{DateTime, Utc};
 use futures_util::TryStreamExt;
 use mongodb::SessionCursor;
@@ -13,11 +8,9 @@ use serde::{Deserialize, Serialize};
 use tokio_stream::StreamExt;
 use uuid::Uuid;
 
+use crate::concepts::group::Group;
+use crate::concepts::subject::Subject;
 use crate::database::DBHandle;
-use crate::database::DBPool;
-use crate::group::Group;
-use crate::routes::response::ErrorResponse;
-use crate::subject::Subject;
 use crate::utils::random;
 
 #[derive(Eq, PartialEq, Clone, Debug, Deserialize, Serialize)]
@@ -103,44 +96,6 @@ impl User {
             )
             .await
             .unwrap()
-    }
-}
-
-#[async_trait]
-impl<S> FromRequestParts<S> for User
-where
-    S: Send + Sync,
-{
-    type Rejection = Response;
-
-    async fn from_request_parts(
-        parts: &mut Parts,
-        _state: &S,
-    ) -> Result<Self, Self::Rejection> {
-        let db = parts.extract::<Extension<DBPool>>().await.unwrap();
-        let key = parts.headers.get("x-api-key");
-        match key {
-            Some(key) => {
-                let key = key.to_str().unwrap();
-                let hashed_key = random::hash_string(key);
-                let user =
-                    User::with_key(&hashed_key, &mut db.handle().await).await;
-
-                match user {
-                    Some(user) => Ok(user),
-                    _ => Err(response!(
-                        UNAUTHORIZED,
-                        ErrorResponse::from_text("Unauthorised.")
-                    )
-                    .into_response()),
-                }
-            }
-            None => Err(response!(
-                UNAUTHORIZED,
-                ErrorResponse::from_text("Unauthorised.")
-            )
-            .into_response()),
-        }
     }
 }
 

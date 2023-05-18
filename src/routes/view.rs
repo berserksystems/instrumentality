@@ -13,11 +13,11 @@ use mongodb::options::FindOptions;
 use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
-use crate::data::Data;
+use crate::concepts::data::Data;
+use crate::concepts::subject::Subject;
+use crate::concepts::user::User;
 use crate::database::DBHandle;
 use crate::routes::response::{ErrorResponse, ViewResponse};
-use crate::subject::Subject;
-use crate::user::User;
 use crate::utils::deserialise_array::deserialise_array;
 
 #[derive(Serialize, Deserialize)]

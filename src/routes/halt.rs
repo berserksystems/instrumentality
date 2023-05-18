@@ -14,8 +14,8 @@ use axum::response::Response;
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use axum_server::Handle;
 
+use crate::concepts::user::User;
 use crate::routes::response::{ErrorResponse, OkResponse};
-use crate::user::User;
 
 pub async fn halt(
     user: User,

@@ -15,7 +15,7 @@ use crate::common::create_mock_content;
 async fn view() {
     use std::collections::HashMap;
 
-    use instrumentality::data::Datas;
+    use instrumentality::concepts::data::Datas;
     use instrumentality::routes::response::LoginResponse;
     use instrumentality::routes::response::OkResponse;
     use instrumentality::routes::response::ViewResponse;

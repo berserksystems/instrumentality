@@ -12,13 +12,13 @@ use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
 use mongodb::Collection;
 
+use crate::concepts::data::{Data, Datas};
+use crate::concepts::user::User;
 use crate::config::IConfig;
-use crate::data::{Data, Datas};
 use crate::database::DBHandle;
 use crate::routes::queue;
 use crate::routes::queue::InternalQueueItem;
 use crate::routes::response::{ErrorResponse, OkResponse};
-use crate::user::User;
 
 pub async fn add(
     user: User,
@@ -53,16 +53,14 @@ async fn get_queue_item(
     db: &mut DBHandle,
 ) -> Option<InternalQueueItem> {
     let q_coll: Collection<InternalQueueItem> = db.collection("queue");
-    let queue_item = q_coll
+    q_coll
         .find_one_with_session(
             doc! {"queue_id": &queue_id, "lock_holder": &user.uuid },
             None,
             &mut db.session,
         )
         .await
-        .unwrap();
-
-    queue_item
+        .unwrap()
 }
 
 // The logic for this function needs to be simplified.

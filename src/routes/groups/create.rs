@@ -12,11 +12,11 @@ use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::concepts::group::Group;
+use crate::concepts::subject::Subject;
+use crate::concepts::user::User;
 use crate::database::DBHandle;
-use crate::group::Group;
 use crate::routes::response::{CreateResponse, ErrorResponse};
-use crate::subject::Subject;
-use crate::user::User;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct CreateGroupRequest {

@@ -11,9 +11,9 @@ use mongodb::bson::doc;
 use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
+use crate::concepts::user::User;
 use crate::database::DBHandle;
 use crate::routes::response::{ErrorResponse, InviteResponse};
-use crate::user::User;
 use crate::utils::random;
 
 pub struct InviteError;

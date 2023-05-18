@@ -10,10 +10,10 @@ use mongodb::bson::doc;
 use mongodb::Collection;
 use serde::{Deserialize, Serialize};
 
+use crate::concepts::user::User;
 use crate::database::DBHandle;
 use crate::routes::response::{ErrorResponse, RegisterResponse};
 use crate::routes::users::invite::Referral;
-use crate::user::User;
 use crate::utils::random;
 
 #[derive(Debug, Serialize, Deserialize)]

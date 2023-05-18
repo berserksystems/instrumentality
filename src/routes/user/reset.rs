@@ -8,9 +8,9 @@
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use mongodb::bson::doc;
 
+use crate::concepts::user::User;
 use crate::database::DBHandle;
 use crate::routes::response::{ErrorResponse, ResetResponse};
-use crate::user::User;
 use crate::utils::random;
 
 pub async fn reset(user: User, mut db: DBHandle) -> impl IntoResponse {

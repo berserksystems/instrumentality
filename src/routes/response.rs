@@ -73,12 +73,15 @@ impl QueueResponse {
 #[derive(Deserialize, Serialize)]
 pub struct RegisterResponse {
     pub response: String,
-    pub user: crate::user::User,
+    pub user: crate::concepts::user::User,
     pub code: String,
 }
 
 impl RegisterResponse {
-    pub fn from_user_with_code(user: crate::user::User, code: String) -> Self {
+    pub fn from_user_with_code(
+        user: crate::concepts::user::User,
+        code: String,
+    ) -> Self {
         Self {
             response: "OK".to_string(),
             user,
@@ -140,16 +143,16 @@ impl ResetResponse {
 #[derive(Serialize, Deserialize)]
 pub struct LoginResponse {
     pub response: String,
-    pub user: crate::user::User,
-    pub subjects: Vec<crate::subject::Subject>,
-    pub groups: Vec<crate::group::Group>,
+    pub user: crate::concepts::user::User,
+    pub subjects: Vec<crate::concepts::subject::Subject>,
+    pub groups: Vec<crate::concepts::group::Group>,
 }
 
 impl LoginResponse {
     pub fn from_user_data(
-        user: crate::user::User,
-        subjects: Vec<crate::subject::Subject>,
-        groups: Vec<crate::group::Group>,
+        user: crate::concepts::user::User,
+        subjects: Vec<crate::concepts::subject::Subject>,
+        groups: Vec<crate::concepts::group::Group>,
     ) -> Self {
         Self {
             response: "OK".to_string(),
@@ -198,3 +201,4 @@ macro_rules! response {
         (StatusCode::$code, Json($response))
     };
 }
+pub(crate) use response;
