@@ -62,7 +62,7 @@ pub async fn open(
         Client::with_options(config.mongodb.client_opts()).unwrap();
     let database = mongo_client.database(&config.mongodb.database);
 
-    // It is only at this point that MongoDB actually makes a connection.
+    // It is only at this point we actually connect to MongoDB.
     database
         .run_command(doc! {"ping" : 1_u32}, None)
         .await

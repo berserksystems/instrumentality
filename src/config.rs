@@ -114,16 +114,16 @@ impl MDBConfig {
             ClientOptions::builder()
                 .credential(creds)
                 .hosts(vec![server_addr])
-                .connect_timeout(Duration::new(1, 0))
-                .heartbeat_freq(Duration::new(1, 0))
-                .server_selection_timeout(Duration::new(1, 0))
+                .connect_timeout(Duration::from_secs(1))
+                .heartbeat_freq(Duration::from_secs(1))
+                .server_selection_timeout(Duration::from_secs(1))
                 .build()
         } else {
             ClientOptions::builder()
                 .hosts(vec![server_addr])
-                .connect_timeout(Duration::new(1, 0))
-                .heartbeat_freq(Duration::new(1, 0))
-                .server_selection_timeout(Duration::new(1, 0))
+                .connect_timeout(Duration::from_secs(1))
+                .heartbeat_freq(Duration::from_secs(1))
+                .server_selection_timeout(Duration::from_secs(1))
                 .build()
         }
     }
