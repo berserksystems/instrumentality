@@ -39,6 +39,7 @@ License'. See `LICENCE` for a copy of this licence.
 - [ ] Consumer clients: Web frontend.
 
 #### Features.
+- [ ] Content timespans.
 - [ ] Behaviour tests.
 - [ ] Logging.
 - [ ] Documentation for system administrators.
