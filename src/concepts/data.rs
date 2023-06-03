@@ -132,9 +132,10 @@ use serde::{Deserialize, Serialize};
 use crate::{config::IConfig, routes::queue::InternalQueueItem};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
 pub enum Timestamp {
     Instant(DateTime<Utc>),
-    Timespan(DateTime<Utc>, DateTime<Utc>),
+    Span(DateTime<Utc>, DateTime<Utc>),
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
