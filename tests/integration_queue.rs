@@ -485,7 +485,7 @@ async fn queue_add_meta_data_modifies_platform_id() {
         platform: PLATFORM_NAME.to_string(),
         username: USERNAME.to_string(),
         private: false,
-        suspended_or_banned: false,
+        banned: false,
         retrieved_at: Utc::now(),
         display_name: None,
         profile_picture: None,
