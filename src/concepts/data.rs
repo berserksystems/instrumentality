@@ -133,6 +133,13 @@ use crate::{config::IConfig, routes::queue::InternalQueueItem};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
+pub enum Timestamp {
+    Instant(DateTime<Utc>),
+    Span(DateTime<Utc>, DateTime<Utc>),
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
 pub enum Data {
     Presence {
         id: String,
@@ -150,7 +157,7 @@ pub enum Data {
         content_id: String,
         deleted: Option<bool>,
         retrieved_from: Option<String>,
-        created_at: Option<DateTime<Utc>>,
+        created_at: Option<Timestamp>,
         body: Option<String>,
         media: Option<Vec<String>>,
         references: Option<HashMap<String, String>>,
@@ -162,7 +169,7 @@ pub enum Data {
         platform: String,
         username: String,
         private: bool,
-        suspended_or_banned: bool,
+        banned: bool,
         retrieved_at: DateTime<Utc>,
         display_name: Option<String>,
         profile_picture: Option<String>,
@@ -225,7 +232,7 @@ impl Data {
                 platform,
                 username,
                 private,
-                suspended_or_banned,
+                banned,
                 display_name,
                 profile_picture,
                 bio,
@@ -239,7 +246,7 @@ impl Data {
                 platform,
                 username,
                 private,
-                suspended_or_banned,
+                banned,
                 display_name,
                 profile_picture,
                 bio,
